@@ -98,3 +98,66 @@ exports.getAllPosts = async (req, res) => {
     });
   }
 };
+
+/* Get All Posts By User */
+exports.getAllPostsByUser = async (req, res) => {
+  const { userId } = req.user;
+
+  try {
+    await Post.find({ author_id: userId })
+      .then((posts) => {
+        if (!posts) {
+          return res.status(404).json({
+            message: "Posts not found",
+          });
+        }
+        return res.status(200).json({
+          message: "Posts found",
+          data: posts,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No posts found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Get All Posts By Community */
+exports.getAllPostsByCommunity = async (
+  req,
+  res
+) => {
+  const { communityId } = req.body;
+
+  try {
+    await Post.find({ community_id: communityId })
+      .then((posts) => {
+        if (!posts) {
+          return res.status(404).json({
+            message: "Posts not found",
+          });
+        }
+        return res.status(200).json({
+          message: "Posts found",
+          data: posts,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No posts found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
