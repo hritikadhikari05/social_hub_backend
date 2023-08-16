@@ -2,13 +2,14 @@ const jwt = require("jsonwebtoken");
 
 const authCheck = (req, res, next) => {
   const { authorization } = req.headers;
+
+  if (!authorization)
+    return res.status(401).send({
+      message:
+        "Access denied. No token provided.",
+    });
   const formattedToken =
     authorization.split(" ")[1];
-  if (!formattedToken)
-    return res
-      .status(401)
-      .send("Access denied. No token provided.");
-
   try {
     const decoded = jwt.verify(
       formattedToken,

@@ -10,6 +10,7 @@ app.use(morgan("dev")); //Morgan package for getting the request URL
 
 /* Routes */
 app.use("/api/auth", auth_routes);
+app.use("/api/user", user_routes);
 
 /* Error Routes */
 app.all("*", (req, res, next) => {

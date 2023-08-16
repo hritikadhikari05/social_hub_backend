@@ -17,9 +17,10 @@ const postSchema = new Schema(
       type: mongoose.Types.ObjectId,
       required: true,
     },
-    subreddit_id: {
+    community_id: {
       type: mongoose.Types.ObjectId,
       required: true,
+      // default: null,
     },
     is_sticked: {
       type: Boolean,
@@ -44,6 +45,10 @@ const postSchema = new Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    tags: {
+      type: Array,
+      required: true,
     },
   },
   { timestamps: true }
