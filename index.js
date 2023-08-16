@@ -1,11 +1,8 @@
 /* create server with swagger and morgan dev */
 const express = require("express");
-const swaggerUi = require("swagger-ui-express");
 const morgan = require("morgan");
 const mogoose = require("mongoose");
 require("dotenv").config();
-
-// const bodyParser = require("body-parser");
 
 const auth_routes = require("./routes/auth_routes.js");
 const error_routes = require("./routes/error_routes.js");

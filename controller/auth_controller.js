@@ -2,6 +2,15 @@ const User = require("../models/user_model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+/*create token */
+const createToken = (user) => {
+  return jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "365d" }
+  );
+};
+
 /* Registration */
 exports.register = (req, res) => {
   const {
@@ -51,20 +60,10 @@ exports.register = (req, res) => {
               await newUser
                 .save()
                 .then((user) => {
-                  let token = jwt.sign(
-                    {
-                      userId: user._id,
-                    },
-                    process.env.JWT_SECRET,
-                    {
-                      expiresIn: "365d",
-                    }
-                  );
-
                   return res.status(200).json({
                     message:
                       "User registered successfully",
-                    token: token,
+                    token: createToken(user),
                   });
                 })
                 .catch((err) => {
@@ -106,20 +105,10 @@ exports.login = (req, res) => {
       .compare(password, user.password)
       .then((isMatch) => {
         if (isMatch) {
-          let token = jwt.sign(
-            {
-              userId: user._id,
-            },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: "365d",
-            }
-          );
-
           return res.status(200).json({
             message:
               "User logged in successfully",
-            token: token,
+            token: createToken(user),
           });
         } else {
           return res.status(400).json({
@@ -128,4 +117,52 @@ exports.login = (req, res) => {
         }
       });
   });
+};
+
+/* Reset Password */
+exports.resetPassword = (req, res) => {
+  //Reset Password
+  const { password, confirmPassword } = req.body;
+  const { userId } = req.query;
+
+  //Check whether the password and confirm password are same
+  if (password === confirmPassword) {
+    bcrypt
+      .genSalt(10)
+      .then((salt) => {
+        bcrypt
+          .hash(password, salt)
+          .then((hashedPassword) => {
+            // User.findByIdAndUpdate()
+            User.findByIdAndUpdate(userId, {
+              password: hashedPassword,
+            })
+              .then((user) => {
+                return res.status(200).json({
+                  message:
+                    "Password reset successfully",
+                  token: createToken(user),
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                return res.status(400).json({
+                  message: err,
+                });
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            return res.status(400).json({
+              message: err,
+            });
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: err,
+        });
+      });
+  }
 };

@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const {
+  Schema,
+  mongoose,
+} = require("../utils/mongoose_db_schema");
 
 const userSchema = new Schema(
   {
