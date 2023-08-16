@@ -123,8 +123,6 @@ exports.login = (req, res) => {
 exports.resetPassword = (req, res) => {
   //Reset Password
   const { password, confirmPassword } = req.body;
-  const { userId } = req.query;
-
   //Check whether the password and confirm password are same
   if (password === confirmPassword) {
     bcrypt
@@ -134,9 +132,12 @@ exports.resetPassword = (req, res) => {
           .hash(password, salt)
           .then((hashedPassword) => {
             // User.findByIdAndUpdate()
-            User.findByIdAndUpdate(userId, {
-              password: hashedPassword,
-            })
+            User.findByIdAndUpdate(
+              req.user.userId,
+              {
+                password: hashedPassword,
+              }
+            )
               .then((user) => {
                 return res.status(200).json({
                   message:
