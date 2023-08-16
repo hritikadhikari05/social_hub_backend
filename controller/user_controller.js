@@ -55,13 +55,13 @@ exports.getPost = async (req, res) => {
         }
         return res.status(200).json({
           message: "Post found",
-          post,
+          data: post,
         });
       })
       .catch((err) => {
         console.log(err);
         return res.status(400).json({
-          message: err,
+          message: "No post found",
         });
       });
   } catch (error) {
@@ -83,13 +83,13 @@ exports.getAllPosts = async (req, res) => {
         }
         return res.status(200).json({
           message: "Posts found",
-          posts,
+          data: posts,
         });
       })
       .catch((err) => {
         console.log(err);
         return res.status(400).json({
-          message: err,
+          message: "No posts found",
         });
       });
   } catch (error) {
