@@ -1,42 +1,77 @@
 const express = require("express");
 const router = express.Router();
 
-const user_controller = require("../controller/post_controller.js");
+const post_controller = require("../controller/post_controller.js");
 const authCheck = require("../middlewares/auth_middleware.js");
 
 /* Create Post */
 router.post(
   "/create-post",
   authCheck,
-  user_controller.createPost
+  post_controller.createPost
 );
 
 /* Get Post */
 router.get(
   "/get-post/:postId",
   authCheck,
-  user_controller.getPost
+  post_controller.getPost
 );
 
 /* Get All Posts */
 router.get(
   "/get-all-posts",
   authCheck,
-  user_controller.getAllPosts
+  post_controller.getAllPosts
 );
 
 /* Get All Posts By User */
 router.get(
   "/get-all-posts-by-user",
   authCheck,
-  user_controller.getAllPostsByUser
+  post_controller.getAllPostsByUser
 );
 
 /* Get All Posts By community */
 router.get(
   "/get-all-posts-by-community",
   authCheck,
-  user_controller.getAllPostsByCommunity
+  post_controller.getAllPostsByCommunity
+);
+
+/* Get latest Post */
+router.get(
+  "/get-latest-posts",
+  authCheck,
+  post_controller.getLatestPosts
+);
+
+/* Get Trending Post */
+router.get(
+  "/get-trending-posts",
+  authCheck,
+  post_controller.getTrendingPosts
+);
+
+/* Upvote Post */
+router.post(
+  "/upvote-post/:postId",
+  authCheck,
+  post_controller.upvotePost
+);
+
+/* Downvote Post */
+router.post(
+  "/downvote-post/:postId",
+  authCheck,
+  post_controller.downvotePost
+);
+
+/* Delete Post By Id */
+router.delete(
+  "/delete-post/:postId",
+  authCheck,
+  post_controller.deletePost
 );
 
 module.exports = router;

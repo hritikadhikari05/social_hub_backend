@@ -161,3 +161,176 @@ exports.getAllPostsByCommunity = async (
     });
   }
 };
+
+/* Get latest Posts */
+exports.getLatestPosts = async (req, res) => {
+  try {
+    await Post.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .then((posts) => {
+        if (!posts) {
+          return res.status(404).json({
+            message: "Posts not found",
+          });
+        }
+        return res.status(200).json({
+          message: "Posts found",
+          data: posts,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No posts found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Get trending Posts */
+exports.getTrendingPosts = async (req, res) => {
+  try {
+    await Post.find()
+      .sort({ upvotes_count: -1 })
+      .limit(10)
+      .then((posts) => {
+        if (!posts) {
+          return res.status(404).json({
+            message: "Posts not found",
+          });
+        }
+        return res.status(200).json({
+          message: "Posts found",
+          data: posts,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No posts found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Delete post by id */
+exports.deletePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    await Post.findById(postId)
+      .then((post) => {
+        if (!post) {
+          return res.status(404).json({
+            message: "Post not found",
+          });
+        }
+        if (post.author_id != userId) {
+          return res.status(401).json({
+            message: "You are not authorized",
+          });
+        }
+        post.remove();
+        return res.status(200).json({
+          message: "Post deleted successfully",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No post found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Upvote post by id and increase the count */
+exports.upvotePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    await Post.findById(postId)
+      .then((post) => {
+        if (!post) {
+          return res.status(404).json({
+            message: "Post not found",
+          });
+        }
+        if (post.upvotes.includes(userId)) {
+          return res.status(400).json({
+            message: "You have already upvoted",
+          });
+        }
+        post.upvotes.push(userId);
+        post.upvotes_count++;
+        post.save();
+        return res.status(200).json({
+          message: "Post upvoted successfully",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No post found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Downvote post by id and increase the downvote_count and decrease the upvote_count  */
+exports.downvotePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    await Post.findById(postId)
+      .then((post) => {
+        if (!post) {
+          return res.status(404).json({
+            message: "Post not found",
+          });
+        }
+        if (post.downvotes.includes(userId)) {
+          return res.status(400).json({
+            message: "You have already downvoted",
+          });
+        }
+        post.downvotes.push(userId);
+        post.downvotes_count++;
+        // post.upvotes_count--;
+        post.save();
+        return res.status(200).json({
+          message: "Post downvoted successfully",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No post found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const auth_routes = require("./routes/auth_routes.js");
-const user_routes = require("./routes/post_routes.js");
+const post_routes = require("./routes/post_routes.js");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -10,7 +10,7 @@ app.use(morgan("dev")); //Morgan package for getting the request URL
 
 /* Routes */
 app.use("/api/auth", auth_routes);
-app.use("/api/user", user_routes);
+app.use("/api/post", post_routes);
 
 /* Error Routes */
 app.all("*", (req, res, next) => {

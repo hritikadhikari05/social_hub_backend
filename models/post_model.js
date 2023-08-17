@@ -27,11 +27,21 @@ const postSchema = new Schema(
       required: true,
     },
     upvotes: {
+      type: Array,
+      required: true,
+      default: [],
+    },
+    downvotes: {
+      type: Array,
+      required: true,
+      default: [],
+    },
+    upvotes_count: {
       type: Number,
       required: true,
       default: 0,
     },
-    downvotes: {
+    downvotes_count: {
       type: Number,
       required: true,
       default: 0,
