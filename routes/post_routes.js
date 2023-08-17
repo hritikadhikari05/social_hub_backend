@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const user_controller = require("../controller/user_controller.js");
-const authCheck = require("../middlewares/auth_middleware");
+const user_controller = require("../controller/post_controller.js");
+const authCheck = require("../middlewares/auth_middleware.js");
 
 /* Create Post */
 router.post(

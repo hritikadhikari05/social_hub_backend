@@ -3,7 +3,7 @@ const {
   mongoose,
 } = require("../utils/mongoose_db_schema");
 
-const subRedditsSchema = new Schema(
+const communitySchema = new Schema(
   {
     name: { type: String, required: true },
     displayName: {
@@ -14,7 +14,7 @@ const subRedditsSchema = new Schema(
       type: String,
       required: true,
     },
-    subreddit_type: {
+    community_type: {
       type: String,
       required: true,
     },
@@ -47,6 +47,6 @@ const subRedditsSchema = new Schema(
 );
 
 module.exports = mongoose.model(
-  "SubReddits",
-  subRedditsSchema
+  "Community",
+  communitySchema
 );

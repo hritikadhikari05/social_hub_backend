@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const auth_routes = require("./routes/auth_routes.js");
-const user_routes = require("./routes/user_routes.js");
+const user_routes = require("./routes/post_routes.js");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
