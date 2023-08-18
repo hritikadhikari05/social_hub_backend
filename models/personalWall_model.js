@@ -1,15 +1,15 @@
 const {
-  Schema,
   mongoose,
+  Schema,
 } = require("../utils/mongoose_db_schema");
 
-const adminModel = new Schema(
+const personalWallSchema = new Schema(
   {
-    admin_id: {
+    user_id: {
       type: mongoose.Types.ObjectId,
       required: true,
     },
-    community_id: {
+    wall_id: {
       type: mongoose.Types.ObjectId,
       required: true,
     },
@@ -18,6 +18,6 @@ const adminModel = new Schema(
 );
 
 module.exports = mongoose.model(
-  "Admin",
-  adminModel
+  "PersonalWall",
+  personalWallSchema
 );

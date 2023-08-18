@@ -1,4 +1,5 @@
 const User = require("../models/user_model");
+const PersonalWall = require("../models/personalWall_model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -60,6 +61,20 @@ exports.register = (req, res) => {
               await newUser
                 .save()
                 .then((user) => {
+                  // Register user in personal wall as Community wall
+                  const newPersonalWall =
+                    new PersonalWall({
+                      user_id: user._id,
+                      wall_id: user._id,
+                    });
+                  newPersonalWall
+                    .save()
+                    .then((personalWall) => {
+                      console.log(
+                        "Personal wall created successfully",
+                        personalWall
+                      );
+                    });
                   return res.status(200).json({
                     message:
                       "User registered successfully",

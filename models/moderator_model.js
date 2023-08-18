@@ -5,13 +5,12 @@ const {
 
 const moderatorSchema = new Schema(
   {
-    userId: {
+    user_id: {
       type: mongoose.Types.ObjectId,
-      ref: "User",
+      required: true,
     },
-    subRedditId: {
+    community_id: {
       type: mongoose.Types.ObjectId,
-      ref: "SubRedditId",
     },
   },
   { timestamps: true }
