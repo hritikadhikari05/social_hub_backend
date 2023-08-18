@@ -13,16 +13,23 @@ router.post(
 
 /* Get Comment */
 router.get(
-  "/get-comments",
+  "/get-comments/:post_id",
   authCheck,
   commentController.getComments
 );
 
 /* Get Comment Replies */
 router.get(
-  "/get-comment-replies",
+  "/get-comment-replies/:comment_id",
   authCheck,
   commentController.getCommentReplies
+);
+
+/* Delete Comment */
+router.delete(
+  "/delete-comment/:comment_id",
+  authCheck,
+  commentController.deleteComment
 );
 
 module.exports = router;

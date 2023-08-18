@@ -78,12 +78,12 @@ exports.createComment = async (req, res) => {
 /* Get All Comments */
 exports.getComments = async (req, res) => {
   try {
-    const { post_id } = req.body;
-    const { userId } = req.user;
+    const { post_id } = req.params;
 
     //Get all the comments for a particular post
     const comments = await Comment.find({
       post_id,
+      parent_type: "POST",
     });
     if (!comments) {
       res.status(400).json({
@@ -102,8 +102,7 @@ exports.getComments = async (req, res) => {
 /* Get Comment Replies */
 exports.getCommentReplies = async (req, res) => {
   try {
-    const { comment_id } = req.body;
-    const { userId } = req.user;
+    const { comment_id } = req.params;
 
     //Get all the replies for a particular comment
     const replies = await Comment.find({
@@ -118,6 +117,36 @@ exports.getCommentReplies = async (req, res) => {
       message: "Replies Fetched Successfully",
       data: replies,
     });
+  } catch (error) {
+    res.status(500).json("Something Went Wrong.");
+  }
+};
+
+/* Delete Comment and their replies */
+exports.deleteComment = async (req, res) => {
+  try {
+    const { comment_id } = req.params;
+    const { userId } = req.user;
+
+    //Delete the comment
+    const comment =
+      await Comment.findOneAndDelete({
+        _id: comment_id,
+        author_id: userId,
+      });
+    if (!comment) {
+      res.status(400).json({
+        message: "No Comment Found",
+      });
+    } else {
+      //Delete all the replies of the comment
+      await Comment.deleteMany({
+        parent_id: comment_id,
+      });
+      res.status(200).json({
+        message: "Comment Deleted Successfully",
+      });
+    }
   } catch (error) {
     res.status(500).json("Something Went Wrong.");
   }
