@@ -13,6 +13,13 @@ router.post(
 /* Login a user */
 router.post("/login", auth_controller.login);
 
+/* Get user details */
+router.get(
+  "/user-details",
+  authCheck,
+  auth_controller.getUserDetails
+);
+
 /* Reset Password */
 router.put(
   "/reset-password",

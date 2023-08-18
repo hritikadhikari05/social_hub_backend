@@ -182,3 +182,19 @@ exports.resetPassword = (req, res) => {
       });
   }
 };
+
+/* Get user details */
+exports.getUserDetails = (req, res) => {
+  User.findById(req.user.userId)
+    .then((user) => {
+      return res.status(200).json({
+        user: user,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(400).json({
+        message: err,
+      });
+    });
+};
