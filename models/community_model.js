@@ -29,10 +29,12 @@ const communitySchema = new Schema(
     member_count: {
       type: Number,
       required: true,
+      default: 0,
     },
     report_count: {
       type: Number,
       required: true,
+      default: 0,
     },
     is_banned: {
       type: Boolean,
@@ -41,6 +43,7 @@ const communitySchema = new Schema(
     ban_reason: {
       type: String,
       required: true,
+      default: "",
     },
   },
   { timestamps: true }

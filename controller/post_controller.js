@@ -53,6 +53,8 @@ exports.getPost = async (req, res) => {
             message: "Post not found",
           });
         }
+        post.view_count++;
+        post.save();
         return res.status(200).json({
           message: "Post found",
           data: post,
