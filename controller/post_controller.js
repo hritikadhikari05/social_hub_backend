@@ -336,3 +336,43 @@ exports.downvotePost = async (req, res) => {
     });
   }
 };
+
+/* Edit post by id */
+exports.updatePost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+  const { title, content, tags } = req.body;
+
+  try {
+    await Post.findById(postId)
+      .then((post) => {
+        if (!post) {
+          return res.status(404).json({
+            message: "Post not found",
+          });
+        }
+        if (post.author_id != userId) {
+          return res.status(401).json({
+            message: "You are not authorized",
+          });
+        }
+        post.title = title;
+        post.content = content;
+        post.tags = tags ? tags : [];
+        post.save();
+        return res.status(200).json({
+          message: "Post edited successfully",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          message: "No post found",
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};

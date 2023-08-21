@@ -74,4 +74,11 @@ router.delete(
   post_controller.deletePost
 );
 
+/* Update Post By Id */
+router.put(
+  "/update-post/:postId",
+  authCheck,
+  post_controller.updatePost
+);
+
 module.exports = router;

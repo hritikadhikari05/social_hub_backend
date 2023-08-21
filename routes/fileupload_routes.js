@@ -29,4 +29,16 @@ router.post(
   fileupload_controller.uploadSingleFile
 );
 
+router.post(
+  "/multiple-file-upload",
+  upload.array("fileName", 5),
+  fileupload_controller.uploadMultipleFile
+);
+
+/* Delete file from Firebase */
+router.delete(
+  "/delete-file/:name",
+  fileupload_controller.deleteFile
+);
+
 module.exports = { storage, router };
