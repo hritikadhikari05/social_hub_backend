@@ -59,6 +59,7 @@ const postSchema = new Schema(
     tags: {
       type: Array,
       required: true,
+      default: [],
     },
   },
   { timestamps: true }
