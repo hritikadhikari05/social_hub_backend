@@ -6,6 +6,6 @@ const port = 3000;
 
 dbConnect();
 
-app.listen(port, () => {
+app.listen(port, (req, res) => {
   console.log(`App is running on port ${port}`);
 });
