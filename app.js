@@ -8,6 +8,7 @@ const comment_routes = require("./routes/comment_routes.js");
 const community_routes = require("./routes/community_routes.js");
 const fileupload_routes =
   require("./routes/fileupload_routes.js").router;
+const bookmark_routes = require("./routes/bookmark_routes.js");
 
 /* Middlewares */
 app.use(cors());
@@ -21,6 +22,7 @@ app.use("/api/post", post_routes);
 app.use("/api/comment", comment_routes);
 app.use("/api/community", community_routes);
 app.use("/api/uploads", fileupload_routes);
+app.use("/api/bookmarks", bookmark_routes);
 
 /* Error Routes */
 app.all("*", (req, res, next) => {
