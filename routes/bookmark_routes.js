@@ -11,4 +11,18 @@ router.post(
   bookmarkController.addBookmark
 );
 
+/* Remove Bookmark */
+router.delete(
+  "/remove-bookmark/:postId",
+  authCheck,
+  bookmarkController.removeBookmark
+);
+
+/* Get all the bookmarked posts with userId */
+router.get(
+  "/get-bookmarks",
+  authCheck,
+  bookmarkController.getBookmarks
+);
+
 module.exports = router;

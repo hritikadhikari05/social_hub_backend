@@ -7,8 +7,8 @@ exports.addBookmark = async (req, res) => {
 
   try {
     const bookmarks = await Bookmark.find({
-      userId: userId,
-      postId: postId,
+      user: userId,
+      post: postId,
     });
     if (bookmarks.length > 0) {
       return res.status(400).json({
@@ -16,8 +16,8 @@ exports.addBookmark = async (req, res) => {
       });
     }
     const newBookmark = new Bookmark({
-      userId: userId,
-      postId: postId,
+      user: userId,
+      post: postId,
     });
     await newBookmark.save();
     return res.status(200).json({
@@ -38,8 +38,8 @@ exports.removeBookmark = async (req, res) => {
   try {
     const bookmarks =
       await Bookmark.findOneAndDelete({
-        userId: userId,
-        postId: postId,
+        user: userId,
+        post: postId,
       });
     if (!bookmarks) {
       return res.status(400).json({
@@ -51,6 +51,33 @@ exports.removeBookmark = async (req, res) => {
       message: "Post removed from bookmark",
     });
   } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Get all the bookmarked posts with logged in user and latest bookmarked post */
+exports.getBookmarks = async (req, res) => {
+  const { userId } = req.user;
+
+  try {
+    const bookmarks = await Bookmark.find({
+      user: userId,
+    })
+      .sort({ createdAt: -1 })
+      .populate("post");
+    if (bookmarks.length === 0) {
+      return res.status(400).json({
+        message: "No bookmarked posts found",
+      });
+    }
+    return res.status(200).json({
+      message: "Bookmarks found",
+      data: bookmarks,
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Something went wrong",
     });

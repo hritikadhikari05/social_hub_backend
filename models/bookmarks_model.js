@@ -5,7 +5,7 @@ const {
 
 const bookmarkSchema = new Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [
@@ -13,7 +13,7 @@ const bookmarkSchema = new Schema(
         "A bookmark must belong to a user!",
       ],
     },
-    postId: {
+    post: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
       required: [
