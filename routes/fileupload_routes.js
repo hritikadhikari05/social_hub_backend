@@ -1,37 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const { initializeApp } = require("firebase/app");
-const {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} = require("firebase/storage");
-
-const {
-  firebaseConfig,
-} = require("../config/firebase.config");
 
 const fileupload_controller = require("../controller/fileupload_controller.");
-
-/* Initialize Firebase */
-initializeApp(firebaseConfig);
-
-const storage = getStorage();
-const upload = multer({
-  storage: multer.memoryStorage(),
-});
+const {
+  upload,
+} = require("../utils/file_upload");
 
 router.post(
   "/single-file-upload",
-  upload.single("fileName"),
-  fileupload_controller.uploadSingleFile
+  // uploadImage.single("upload"),
+  upload.single("upload"),
+  fileupload_controller.uploadFile
 );
 
 router.post(
   "/multiple-file-upload",
-  upload.array("fileName", 5),
+  upload.array("upload", 5),
   fileupload_controller.uploadMultipleFile
 );
 
@@ -41,4 +25,4 @@ router.delete(
   fileupload_controller.deleteFile
 );
 
-module.exports = { storage, router };
+module.exports = { router };
