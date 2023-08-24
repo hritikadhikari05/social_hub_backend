@@ -17,7 +17,10 @@ exports.uploadFile = async (req, res) => {
       fileInfo: req.file,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: error,
+    });
   }
 };
 
@@ -37,7 +40,10 @@ exports.uploadMultipleFile = async (req, res) => {
       urls: urls,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: error,
+    });
   }
 };
 
@@ -57,21 +63,16 @@ exports.deleteFile = async (req, res) => {
       keyToDelete
     )
       .then((val) => {
-        console.log("Success", val);
         res.send(200).json({
           message: `File with ${keyToDelete} sucessfully deleted from ${bucketName}`,
         });
       })
       .catch((err) => {
-        console.log("Error", err);
         res.status(400).json({
           message: `Error something went wrong ${err}`,
         });
       });
   } else {
-    console.log(
-      `File '${keyToDelete}' does not exist in '${bucketName}'.`
-    );
     res.status(400).json({
       message: `File '${keyToDelete}' does not exist in '${bucketName}'.`,
     });
