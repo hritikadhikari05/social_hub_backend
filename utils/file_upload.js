@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+
 // Configure AWS
 const spacesEndpoint = new AWS.Endpoint(
   "blr1.digitaloceanspaces.com"
@@ -16,7 +17,7 @@ const s3 = new AWS.S3({
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "socail-hub", // Replace with your Space's name
+    bucket: process.env.BUCKET_NAME, // Replace with your Space's name
     acl: "public-read", // Set permissions for the uploaded file
     key: function (request, file, cb) {
       cb(
