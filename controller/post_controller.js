@@ -131,7 +131,7 @@ exports.getAllPostsByUser = async (req, res) => {
   }
 };
 
-/* Get All Posts By Community */
+/* Get All Posts By Community Id */
 exports.getAllPostsByCommunity = async (
   req,
   res
