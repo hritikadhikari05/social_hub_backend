@@ -4,11 +4,6 @@ dotenv.config({ path: "./.env" });
 
 const dbConnect = () => {
   // Connect to the database
-  //   const dbConnectionString =
-  //     process.env.DATABASE_URL.replace(
-  //       "<PASSWORD>",
-  //       process.env.DATABASE_PASSWORD
-  //     );
   const dbConnectionString =
     process.env.DATABASE_URL;
 
