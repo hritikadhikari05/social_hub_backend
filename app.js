@@ -17,9 +17,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev")); //Morgan package for getting the request URL
 
 /* Routes */
-app.use("/", (req, res) => {
-  res.send("Serve is Working");
-});
 app.use("/api/auth", auth_routes);
 app.use("/api/post", post_routes);
 app.use("/api/comment", comment_routes);
