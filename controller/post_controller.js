@@ -76,24 +76,26 @@ exports.getPost = async (req, res) => {
 /* Get All Posts */
 exports.getAllPosts = async (req, res) => {
   try {
-    await Post.find()
-      .then((posts) => {
-        if (!posts) {
-          return res.status(404).json({
-            message: "Posts not found",
-          });
-        }
-        return res.status(200).json({
-          message: "Posts found",
-          data: posts,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No posts found",
-        });
+    const limit = parseInt(req.query.limit) || 10; // Limit the post
+
+    const page = parseInt(req.query.page) || 1; //Limit the page
+
+    const skip = (page - 1) * limit; // Skip the post
+
+    const post = await Post.find()
+      .skip(skip)
+      .limit(limit);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Posts not found",
       });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: post,
+      hits: post.length,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -104,26 +106,26 @@ exports.getAllPosts = async (req, res) => {
 /* Get All Posts By User */
 exports.getAllPostsByUser = async (req, res) => {
   const { userId } = req.user;
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
 
+  const page = parseInt(req.query.page) || 1; //Limit the page
+
+  const skip = (page - 1) * limit; // Skip the post
   try {
-    await Post.find({ author_id: userId })
-      .then((posts) => {
-        if (!posts) {
-          return res.status(404).json({
-            message: "Posts not found",
-          });
-        }
-        return res.status(200).json({
-          message: "Posts found",
-          data: posts,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No posts found",
-        });
+    const posts = await Post.find({
+      author_id: userId,
+    })
+      .skip(skip)
+      .limit(limit);
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
       });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -138,25 +140,25 @@ exports.getAllPostsByCommunity = async (
 ) => {
   const { communityId } = req.body;
 
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+  const page = parseInt(req.query.page) || 1; //Limit the page
+  const skip = (page - 1) * limit; // Skip the post
+
   try {
-    await Post.find({ community_id: communityId })
-      .then((posts) => {
-        if (!posts) {
-          return res.status(404).json({
-            message: "Posts not found",
-          });
-        }
-        return res.status(200).json({
-          message: "Posts found",
-          data: posts,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No posts found",
-        });
+    const posts = await Post.find({
+      community_id: communityId,
+    })
+      .skip(skip)
+      .limit(limit);
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
       });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -166,27 +168,23 @@ exports.getAllPostsByCommunity = async (
 
 /* Get latest Posts */
 exports.getLatestPosts = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+  const page = parseInt(req.query.page) || 1; //Limit the page
+  const skip = (page - 1) * limit; // Skip the post
   try {
-    await Post.find()
+    const posts = await Post.find()
       .sort({ createdAt: -1 })
-      .limit(10)
-      .then((posts) => {
-        if (!posts) {
-          return res.status(404).json({
-            message: "Posts not found",
-          });
-        }
-        return res.status(200).json({
-          message: "Posts found",
-          data: posts,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No posts found",
-        });
+      .skip(skip)
+      .limit(limit);
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
       });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -196,27 +194,23 @@ exports.getLatestPosts = async (req, res) => {
 
 /* Get trending Posts */
 exports.getTrendingPosts = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+  const page = parseInt(req.query.page) || 1; //Limit the page
+  const skip = (page - 1) * limit; // Skip the post
   try {
-    await Post.find()
+    const posts = await Post.find()
       .sort({ upvotes_count: -1 })
-      .limit(10)
-      .then((posts) => {
-        if (!posts) {
-          return res.status(404).json({
-            message: "Posts not found",
-          });
-        }
-        return res.status(200).json({
-          message: "Posts found",
-          data: posts,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No posts found",
-        });
+      .skip(skip)
+      .limit(limit);
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
       });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: posts,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
