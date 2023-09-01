@@ -46,6 +46,11 @@ const postSchema = new Schema(
       required: true,
       default: 0,
     },
+    reports: {
+      type: Array,
+      required: true,
+      default: [],
+    },
     report_count: {
       type: Number,
       required: true,
@@ -60,6 +65,11 @@ const postSchema = new Schema(
       type: Array,
       required: true,
       default: [],
+    },
+    is_blocked: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
   },
   { timestamps: true }

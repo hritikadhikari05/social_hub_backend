@@ -4,6 +4,12 @@ const router = express.Router();
 const post_controller = require("../controller/post_controller.js");
 const authCheck = require("../middlewares/auth_middleware.js");
 
+/* Add Reports Field */
+// router.post(
+//   "/add-reports",
+//   post_controller.addReportsField
+// );
+
 /* Create Post */
 router.post(
   "/create-post",
@@ -23,6 +29,20 @@ router.get(
   "/get-all-posts",
   authCheck,
   post_controller.getAllPosts
+);
+
+/*Get Blocked Posts */
+router.get(
+  "/get-blocked-posts",
+  authCheck,
+  post_controller.getAllBlockedPosts
+);
+
+/* Unblock Post */
+router.post(
+  "/unblock-post/:postId",
+  authCheck,
+  post_controller.unblockPost
 );
 
 /* Get All Posts By User */
