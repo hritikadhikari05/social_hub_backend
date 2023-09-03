@@ -197,19 +197,72 @@ exports.unblockPost = async (req, res) => {
 };
 
 /* Report Post by Post Id */
-// exports.reportPost = async (req, res) => {
-//   const { postId } = req.params;
+exports.reportPost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
 
-//   const post = await Post.findById(postId);
+  try {
+    const post = await Post.findById(postId);
 
-//   if (!post) {
-//     res.status(404).json({
-//       message: "Post not found.",
-//     });
-//   }
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found.",
+      });
+    }
 
-//   // post.report_count++;
-// };
+    if (post.reports.includes(userId)) {
+      return res.status(400).json({
+        message: "You have already reported post",
+      });
+    }
+
+    post.reports.push(userId);
+    post.report_count++;
+    post.save();
+
+    res.status(200).json({
+      message: "Post reported successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
+/* Unreport Post by Post Id */
+exports.unreportPost = async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found.",
+      });
+    }
+
+    if (!post.reports.includes(userId)) {
+      return res.status(400).json({
+        message: "You have not reported post",
+      });
+    }
+
+    post.reports.pull(userId);
+    post.report_count--;
+    post.save();
+
+    res.status(200).json({
+      message: "Post unreported successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong.",
+    });
+  }
+};
 
 /* Get All Posts By User */
 exports.getAllPostsByUser = async (req, res) => {

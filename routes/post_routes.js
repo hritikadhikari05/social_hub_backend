@@ -45,6 +45,20 @@ router.post(
   post_controller.unblockPost
 );
 
+/* Report Post */
+router.post(
+  "/report-post/:postId",
+  authCheck,
+  post_controller.reportPost
+);
+
+/* Unreport Post */
+router.post(
+  "/unreport-post/:postId",
+  authCheck,
+  post_controller.unreportPost
+);
+
 /* Get All Posts By User */
 router.get(
   "/get-all-posts-by-user",
