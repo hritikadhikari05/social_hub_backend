@@ -20,3 +20,14 @@
 | `/downvote-post/:postId`  | POST   | Downvote a specific post by its ID.               | Authentication       |
 | `/delete-post/:postId`    | DELETE | Delete a specific post by its ID.                 | Authentication       |
 | `/update-post/:postId`    | PUT    | Update a specific post by its ID.                 | Authentication       |
+
+## Community Controller Routes
+
+| Route                                 | Method | Description                                         | Middleware           |
+|---------------------------------------|--------|-----------------------------------------------------|-----------------------|
+| `/create`                             | POST   | Create a new community.                            | Authentication       |
+| `/get-all-communities`                | GET    | Retrieve all communities.                          | None                  |
+| `/get-community/:communityId`         | GET    | Retrieve a community by its ID.                    | None                  |
+| `/join-community/:communityId`         | POST   | Join a community by its ID.                        | Authentication       |
+| `/promote-to-moderator/:communityId`   | POST   | Promote a user to moderator in a community.        | Authentication       |
+
