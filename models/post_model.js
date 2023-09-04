@@ -27,12 +27,12 @@ const postSchema = new Schema(
       required: true,
     },
     upvotes: {
-      type: Array,
+      type: Array.of(mongoose.Types.ObjectId),
       required: true,
       default: [],
     },
     downvotes: {
-      type: Array,
+      type: Array.of(mongoose.Types.ObjectId),
       required: true,
       default: [],
     },
@@ -47,7 +47,7 @@ const postSchema = new Schema(
       default: 0,
     },
     reports: {
-      type: Array,
+      type: Array.of(mongoose.Types.ObjectId),
       required: true,
       default: [],
     },

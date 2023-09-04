@@ -26,6 +26,11 @@ const communitySchema = new Schema(
       type: mongoose.Types.ObjectId,
       required: true,
     },
+    members: {
+      type: Array.of(mongoose.Types.ObjectId),
+      required: true,
+      default: [],
+    },
     member_count: {
       type: Number,
       required: true,
@@ -42,7 +47,6 @@ const communitySchema = new Schema(
     },
     ban_reason: {
       type: String,
-      required: true,
       default: "",
     },
   },
