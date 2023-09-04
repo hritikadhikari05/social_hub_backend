@@ -1,5 +1,8 @@
 # Social Hub
 
+Social Hub is a community-driven platform that empowers users to share, discuss, and discover content on a wide range of topics. Similar to Reddit, it provides a space for individuals to engage in conversations, post content, and connect with like-minded users. Whether you're interested in news, hobbies, or niche interests, Social Hub is the place to explore, contribute, and stay informed within diverse communities. Join us and be a part of the discussion!
+
+
 ## Available Routes
 
 ## Authentication Controller Routes
