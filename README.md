@@ -1,6 +1,17 @@
 # Social Hub
 
 ## Available Routes
+
+## Authentication Controller Routes
+
+| Route                 | Method | Description                                      | Middleware           |
+|-----------------------|--------|--------------------------------------------------|-----------------------|
+| `/register`           | POST   | Register a new user.                            | None                  |
+| `/login`              | POST   | Login a user.                                   | None                  |
+| `/user-details`       | GET    | Get user details.                               | Authentication       |
+| `/reset-password`     | PUT    | Reset user password.                            | Authentication       |
+
+
 ## Post Controller
 
 | Route                     | Method | Description                                         | Middleware           |
@@ -30,4 +41,30 @@
 | `/get-community/:communityId`         | GET    | Retrieve a community by its ID.                    | None                  |
 | `/join-community/:communityId`         | POST   | Join a community by its ID.                        | Authentication       |
 | `/promote-to-moderator/:communityId`   | POST   | Promote a user to moderator in a community.        | Authentication       |
+
+## Comment Controller Routes
+
+| Route                                  | Method | Description                                      | Middleware           |
+|----------------------------------------|--------|--------------------------------------------------|-----------------------|
+| `/create-comment/:post_id`             | POST   | Create a comment on a specific post.            | Authentication       |
+| `/get-comments/:post_id`               | GET    | Retrieve comments for a specific post.          | Authentication       |
+| `/get-comment-replies/:comment_id`     | GET    | Retrieve replies for a specific comment.        | Authentication       |
+| `/delete-comment/:comment_id`          | DELETE | Delete a specific comment by its ID.            | Authentication       |
+
+## Bookmark Controller Routes
+
+| Route                                   | Method | Description                                      | Middleware           |
+|-----------------------------------------|--------|--------------------------------------------------|-----------------------|
+| `/add-bookmark/:postId`                 | POST   | Add a bookmark to a specific post.              | Authentication       |
+| `/remove-bookmark/:postId`              | DELETE | Remove a bookmark from a specific post.         | Authentication       |
+| `/get-bookmarks`                        | GET    | Get all bookmarked posts for the user.          | Authentication       |
+
+## File Upload Controller Routes
+
+| Route                                | Method | Description                                      | Middleware           |
+|--------------------------------------|--------|--------------------------------------------------|-----------------------|
+| `/single-file-upload`                | POST   | Upload a single file.                           | None                  |
+| `/multiple-file-upload`              | POST   | Upload multiple files (up to 5).               | None                  |
+| `/delete-file/:name`                 | DELETE | Delete a file from Firebase storage by name.   | None                  |
+
 
