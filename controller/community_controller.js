@@ -33,6 +33,18 @@ exports.create_community = async (req, res) => {
       icon_image,
     } = req.body;
 
+    /* Check if the community already exists */
+    const communityExists =
+      await Community.findOne({
+        name,
+      });
+
+    if (communityExists) {
+      return res.status(400).json({
+        message: "Community already exists.",
+      });
+    }
+
     const community = new Community({
       name,
       displayName,
