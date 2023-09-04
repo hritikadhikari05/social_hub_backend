@@ -210,10 +210,17 @@ exports.reportPost = async (req, res) => {
       });
     }
 
+    /* If user has already reported the post */
     if (post.reports.includes(userId)) {
       return res.status(400).json({
         message: "You have already reported post",
       });
+    }
+
+    /* If report count is 5 then block the post */
+    if (post.report_count == 5) {
+      post.is_blocked = true;
+      post.save();
     }
 
     post.reports.push(userId);
