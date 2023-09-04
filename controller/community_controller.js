@@ -87,6 +87,11 @@ exports.getCommunityById = async (req, res) => {
     const community = await Community.findById(
       communityId
     );
+    if (!community) {
+      return res.status(400).json({
+        message: "No community with this id.",
+      });
+    }
     res.status(200).json({
       message: "Community Found",
       data: community,
