@@ -99,6 +99,14 @@ exports.getAllPosts = async (req, res) => {
 
     const skip = (page - 1) * limit; // Skip the post
 
+    /* Get the count */
+    const totalItems = await Post.countDocuments({
+      $and: [
+        { report_count: { $lt: 10 } },
+        { is_blocked: false },
+      ],
+    });
+
     //Display post with report count less than 10 and is_blocked is false
     const post = await Post.find({
       $and: [
@@ -118,6 +126,7 @@ exports.getAllPosts = async (req, res) => {
       message: "Posts found",
       data: post,
       hits: post.length,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
@@ -134,6 +143,13 @@ exports.getAllBlockedPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1; //Limit the page
 
     const skip = (page - 1) * limit; // Skip the post
+
+    const totalItems = await Post.countDocuments({
+      $and: [
+        { report_count: { $gt: 5 } },
+        { is_blocked: true },
+      ],
+    });
 
     //Display post with report count greater than 5 and is_blocked is true
     const post = await Post.find({
@@ -154,6 +170,7 @@ exports.getAllBlockedPosts = async (req, res) => {
       message: "Posts found",
       data: post,
       hits: post.length,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
@@ -280,11 +297,17 @@ exports.getAllPostsByUser = async (req, res) => {
 
   const skip = (page - 1) * limit; // Skip the post
   try {
+    /* Get the count */
+    const totalItems = await Post.countDocuments({
+      author_id: userId,
+    });
+
     const posts = await Post.find({
       author_id: userId,
     })
       .skip(skip)
       .limit(limit);
+
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
@@ -293,6 +316,7 @@ exports.getAllPostsByUser = async (req, res) => {
     return res.status(200).json({
       message: "Posts found",
       data: posts,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
@@ -313,6 +337,11 @@ exports.getAllPostsByCommunity = async (
   const skip = (page - 1) * limit; // Skip the post
 
   try {
+    /* Get the count */
+    const totalItems = await Post.countDocuments({
+      community_id: communityId,
+    });
+
     const posts = await Post.find({
       community_id: communityId,
     })
@@ -326,6 +355,7 @@ exports.getAllPostsByCommunity = async (
     return res.status(200).json({
       message: "Posts found",
       data: posts,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
@@ -340,6 +370,12 @@ exports.getLatestPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1; //Limit the page
   const skip = (page - 1) * limit; // Skip the post
   try {
+    /* Get the count */
+    const totalItems =
+      await Post.countDocuments().sort({
+        createdAt: -1,
+      });
+
     const posts = await Post.find()
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -352,6 +388,7 @@ exports.getLatestPosts = async (req, res) => {
     return res.status(200).json({
       message: "Posts found",
       data: posts,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
@@ -366,6 +403,12 @@ exports.getTrendingPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1; //Limit the page
   const skip = (page - 1) * limit; // Skip the post
   try {
+    /* Get the count */
+    const totalItems =
+      await Post.countDocuments().sort({
+        upvotes_count: -1,
+      });
+
     const posts = await Post.find()
       .sort({ upvotes_count: -1 })
       .skip(skip)
@@ -378,6 +421,7 @@ exports.getTrendingPosts = async (req, res) => {
     return res.status(200).json({
       message: "Posts found",
       data: posts,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     res.status(500).json({
