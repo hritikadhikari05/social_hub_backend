@@ -198,3 +198,25 @@ exports.getUserDetails = (req, res) => {
       });
     });
 };
+
+/* Get user details by id */
+exports.getUserDetailsById = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found",
+      });
+    }
+    return res.status(200).json({
+      message: "User found",
+      user: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+    });
+  }
+};

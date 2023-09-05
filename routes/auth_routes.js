@@ -26,4 +26,12 @@ router.put(
   authCheck,
   auth_controller.resetPassword
 );
+
+/* Get User Details by Id */
+router.get(
+  "/user-details/:id",
+  authCheck,
+  auth_controller.getUserDetailsById
+);
+
 module.exports = router;
