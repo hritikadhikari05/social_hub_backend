@@ -29,7 +29,7 @@ router.put(
 
 /* Get User Details by Id */
 router.get(
-  "/user-details/:id",
+  "/user-details/:userId",
   authCheck,
   auth_controller.getUserDetailsById
 );
