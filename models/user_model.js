@@ -2,6 +2,7 @@ const {
   Schema,
   mongoose,
 } = require("../utils/mongoose_db_schema");
+const Post = require("./post_model");
 
 const userSchema = new Schema(
   {

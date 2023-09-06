@@ -4,7 +4,7 @@ const { post } = require("../routes/auth_routes");
 /* Add reports field to the post model */
 exports.addReportsField = async (req, res) => {
   try {
-    for (i = 11; i <= 10; i++) {
+    for (i = 0; i <= 80; i++) {
       const posts = new Post({
         title: `This is the reddit post ${i}`,
         content:

@@ -1,4 +1,5 @@
 const User = require("../models/user_model");
+const Post = require("../models/post_model");
 const PersonalWall = require("../models/personalWall_model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -218,5 +219,41 @@ exports.getUserDetailsById = async (req, res) => {
     return res.status(400).json({
       message: error.message,
     });
+  }
+};
+
+/* Delete logged in User */
+exports.deleteUser = async (req, res) => {
+  const { userId } = req.user;
+  console.log(userId);
+  try {
+    const user = await User.findOne({
+      _id: userId,
+    });
+
+    console.log(user);
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found.",
+      });
+    }
+
+    // if (user) {
+    // console.log("hello from c");
+    await user.deleteOne();
+
+    /* Cascade delete for user posts from model*/
+    await Post.deleteMany({
+      author: userId,
+    });
+    // }
+
+    return res.status(200).json({
+      message: "User successfully deleted.",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: error.message });
   }
 };

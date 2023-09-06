@@ -34,4 +34,11 @@ router.get(
   auth_controller.getUserDetailsById
 );
 
+/* Delete logged in user */
+router.delete(
+  "/delete-user",
+  authCheck,
+  auth_controller.deleteUser
+);
+
 module.exports = router;
