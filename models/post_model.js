@@ -13,9 +13,10 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
-    author_id: {
+    author: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "User",
     },
     community_id: {
       type: mongoose.Types.ObjectId,

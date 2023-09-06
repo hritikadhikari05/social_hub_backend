@@ -27,7 +27,7 @@ exports.createPost = async (req, res) => {
   const newPost = new Post({
     title,
     content,
-    author_id: userId,
+    author: userId,
     community_id: community_id
       ? community_id
       : userId,
@@ -63,26 +63,43 @@ exports.getPost = async (req, res) => {
   const { postId } = req.params;
 
   try {
-    await Post.findById(postId)
-      .then((post) => {
-        if (!post) {
-          return res.status(404).json({
-            message: "Post not found",
-          });
-        }
-        post.view_count++;
-        post.save();
-        return res.status(200).json({
-          message: "Post found",
-          data: post,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No post found",
-        });
+    // await Post.findById(postId)
+    //   .then((post) => {
+    //     if (!post) {
+    //       return res.status(404).json({
+    //         message: "Post not found",
+    //       });
+    //     }
+    //     post.view_count++;
+    //     post.save();
+    //     return res.status(200).json({
+    //       message: "Post found",
+    //       data: post,
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     return res.status(400).json({
+    //       message: "No post found",
+    //     });
+    //   });
+    const post = await Post.findById(
+      postId
+    ).populate("author", "-password");
+
+    if (!post) {
+      return res.status(400).json({
+        message: "No post found",
       });
+    }
+
+    post.view_count++;
+    post.save();
+
+    return res.status(200).json({
+      message: "Post found",
+      data: post,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -115,7 +132,8 @@ exports.getAllPosts = async (req, res) => {
       ],
     })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
 
     if (!post) {
       return res.status(404).json({
@@ -159,7 +177,8 @@ exports.getAllBlockedPosts = async (req, res) => {
       ],
     })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
 
     if (!post) {
       return res.status(404).json({
@@ -306,7 +325,8 @@ exports.getAllPostsByUser = async (req, res) => {
       author_id: userId,
     })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
 
     if (!posts) {
       return res.status(404).json({
@@ -346,7 +366,8 @@ exports.getAllPostsByCommunity = async (
       community_id: communityId,
     })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
@@ -379,7 +400,8 @@ exports.getLatestPosts = async (req, res) => {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
@@ -412,7 +434,8 @@ exports.getTrendingPosts = async (req, res) => {
     const posts = await Post.find()
       .sort({ upvotes_count: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("author", "-password");
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
