@@ -1,21 +1,29 @@
 const Post = require("../models/post_model");
+const { post } = require("../routes/auth_routes");
 
 /* Add reports field to the post model */
-// exports.addReportsField = async (req, res) => {
-//   try {
-//     const posts = await Post.find();
-//     posts.map((post) => {
-//       post.reports = [];
-//       post.save();
-//     });
+exports.addReportsField = async (req, res) => {
+  try {
+    for (i = 11; i <= 10; i++) {
+      const posts = new Post({
+        title: `This is the reddit post ${i}`,
+        content:
+          "This its the content of the reddit post for checking the comments",
+        author: req.user.userId,
+        community_id: req.user.userId,
+      });
+      await posts.save();
+    }
 
-//     res.status(201).json({
-//       message: "Report field successfully added",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error });
-//   }
-// };
+    res.status(201).json({
+      message: "Post successfully added",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: error.message });
+  }
+};
 
 /* Create Post */
 exports.createPost = async (req, res) => {
@@ -85,7 +93,11 @@ exports.getPost = async (req, res) => {
     //   });
     const post = await Post.findById(
       postId
-    ).populate("author", "-password");
+    ).populate({
+      path: "author",
+      select:
+        "userName firstName lastName bio profilePic",
+    });
 
     if (!post) {
       return res.status(400).json({
@@ -102,7 +114,7 @@ exports.getPost = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Something went wrong",
+      message: error.message,
     });
   }
 };
@@ -133,7 +145,11 @@ exports.getAllPosts = async (req, res) => {
     })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
 
     if (!post) {
       return res.status(404).json({
@@ -178,7 +194,11 @@ exports.getAllBlockedPosts = async (req, res) => {
     })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
 
     if (!post) {
       return res.status(404).json({
@@ -326,7 +346,11 @@ exports.getAllPostsByUser = async (req, res) => {
     })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
 
     if (!posts) {
       return res.status(404).json({
@@ -367,7 +391,11 @@ exports.getAllPostsByCommunity = async (
     })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
@@ -401,7 +429,11 @@ exports.getLatestPosts = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
@@ -435,7 +467,11 @@ exports.getTrendingPosts = async (req, res) => {
       .sort({ upvotes_count: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("author", "-password");
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",

@@ -26,6 +26,7 @@ const postSchema = new Schema(
     is_sticked: {
       type: Boolean,
       required: true,
+      default: false,
     },
     upvotes: {
       type: Array.of(mongoose.Types.ObjectId),
