@@ -30,16 +30,22 @@ exports.addBookmark = async (req, res) => {
   const { userId } = req.user;
 
   try {
-    const bookmarks = await Bookmark.find({
+    const bookmarks = await Bookmark.findOne({
       user_id: userId,
       post: postId,
     });
-
-    if (bookmarks.length > 0) {
-      return res.status(400).json({
-        message: "You have already bookmarked",
+    /* If post is already bookmarked then remove
+     it from bookmark 
+    */
+    if (bookmarks) {
+      await bookmarks.deleteOne();
+      return res.status(200).json({
+        message: "You have removed from bookmark",
       });
     }
+    /* If post is not bookmarked then add it 
+    to bookmark 
+    */
     const newBookmark = new Bookmark({
       user_id: userId,
       post: postId,

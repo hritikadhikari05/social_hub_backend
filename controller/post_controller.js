@@ -158,6 +158,7 @@ exports.getAllPosts = async (req, res) => {
         message: "Posts not found",
       });
     }
+
     return res.status(200).json({
       message: "Posts found",
       data: post,
