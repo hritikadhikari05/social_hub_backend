@@ -65,6 +65,7 @@ exports.getBookmarks = async (req, res) => {
     const bookmarks = await Bookmark.find({
       user: userId,
     })
+
       .sort({ createdAt: -1 })
       .populate("post");
     if (bookmarks.length === 0) {
