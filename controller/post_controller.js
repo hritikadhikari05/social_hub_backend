@@ -550,7 +550,7 @@ exports.upvotePost = async (req, res) => {
     if (upvotePost.downvotes.includes(userId)) {
       upvotePost.downvotes.pull(userId);
       upvotePost.downvotes_count--;
-      upvotePost.save();
+      // upvotePost.save();
     }
 
     if (upvotePost.upvotes.includes(userId)) {
@@ -564,10 +564,10 @@ exports.upvotePost = async (req, res) => {
     }
     upvotePost.upvotes.push(userId);
     upvotePost.upvotes_count++;
-    upvotePost.save();
+    await upvotePost.save();
 
     return res.status(200).json({
-      message: "Sucessfully voted",
+      message: "Sucessfully upvoted",
     });
   } catch (error) {
     console.log(error.message);
@@ -583,33 +583,43 @@ exports.downvotePost = async (req, res) => {
   const { userId } = req.user;
 
   try {
-    await Post.findById(postId)
-      .then((post) => {
-        if (!post) {
-          return res.status(404).json({
-            message: "Post not found",
-          });
-        }
-        if (post.downvotes.includes(userId)) {
-          return res.status(400).json({
-            message: "You have already downvoted",
-          });
-        }
-        post.downvotes.push(userId);
-        post.downvotes_count++;
-        // post.upvotes_count--;
-        post.save();
-        return res.status(200).json({
-          message: "Post downvoted successfully",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No post found",
-        });
+    const downvotePost = await Post.findById(
+      postId
+    );
+
+    if (!downvotePost) {
+      return res.status(404).json({
+        message: "No post found",
       });
+    }
+    /* Check if ther user has upvoted the 
+      same post ::
+      Yes: delete from upvote and decrease count
+      No: Downvote Post
+    */
+    if (downvotePost.upvotes.includes(userId)) {
+      downvotePost.upvotes.pull(userId);
+      downvotePost.upvotes_count--;
+    }
+
+    if (downvotePost.downvotes.includes(userId)) {
+      downvotePost.downvotes.pull(userId);
+      downvotePost.downvotes_count--;
+      downvotePost.save();
+      return res.status(400).json({
+        message:
+          "You have taken back your downvote",
+      });
+    }
+    downvotePost.downvotes.push(userId);
+    downvotePost.downvotes_count++;
+    await downvotePost.save();
+
+    return res.status(200).json({
+      message: "Sucessfully downvoted",
+    });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
