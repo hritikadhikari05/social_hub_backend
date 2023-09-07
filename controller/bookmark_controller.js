@@ -1,5 +1,29 @@
 const Bookmark = require("../models/bookmarks_model");
 
+/* Change user field to user_id in Bookmark model */
+exports.changeUserField = async (req, res) => {
+  try {
+    const bookmarks = await Bookmark.updateMany(
+      {},
+      {
+        $rename: {
+          user: "user_id",
+        },
+      },
+      { multi: true }
+    );
+
+    return res.status(200).json({
+      message: "User field changed to user_id",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 /* Add selected post to the bookmark */
 exports.addBookmark = async (req, res) => {
   const { postId } = req.params;
@@ -7,7 +31,7 @@ exports.addBookmark = async (req, res) => {
 
   try {
     const bookmarks = await Bookmark.find({
-      user: userId,
+      user_id: userId,
       post: postId,
     });
     if (bookmarks.length > 0) {
@@ -16,7 +40,7 @@ exports.addBookmark = async (req, res) => {
       });
     }
     const newBookmark = new Bookmark({
-      user: userId,
+      user_id: userId,
       post: postId,
     });
     await newBookmark.save();
@@ -24,6 +48,7 @@ exports.addBookmark = async (req, res) => {
       message: "Post bookmarked successfully",
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
@@ -38,7 +63,7 @@ exports.removeBookmark = async (req, res) => {
   try {
     const bookmarks =
       await Bookmark.findOneAndDelete({
-        user: userId,
+        user_id: userId,
         post: postId,
       });
     if (!bookmarks) {
@@ -63,7 +88,7 @@ exports.getBookmarks = async (req, res) => {
 
   try {
     const bookmarks = await Bookmark.find({
-      user: userId,
+      user_id: userId,
     })
 
       .sort({ createdAt: -1 })

@@ -14,8 +14,10 @@ const bookmark_routes = require("./routes/bookmark_routes.js");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(morgan("dev")); //Morgan package for getting the request URL
 
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev")); //Morgan package for getting the request URL
+}
 /* Routes */
 app.use("/api/auth", auth_routes);
 app.use("/api/post", post_routes);
