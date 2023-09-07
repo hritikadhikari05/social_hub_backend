@@ -3,6 +3,8 @@ const Post = require("../models/post_model");
 const PersonalWall = require("../models/personalWall_model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const { sendOtp } = require("../utils/utils");
 
 /*create token */
 const createToken = (user) => {
@@ -14,7 +16,7 @@ const createToken = (user) => {
 };
 
 /* Registration */
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   const {
     firstName,
     lastName,
@@ -23,85 +25,98 @@ exports.register = (req, res) => {
     password,
     gender,
     confirmPassword,
+    phoneNo,
     bio,
   } = req.body;
-
-  //Register new user and check whether the user with email and username already exists using promise
-
-  User.findOne({ email: email }).then((user) => {
-    if (user) {
-      return res.status(400).json({
-        message: "Email already exists",
+  try {
+    /* Check if the email exists or not */
+    const userWithEmailOrUserNameOrPhone =
+      await User.findOne({
+        $or: [
+          { userName: userName },
+          { email: email },
+          { phoneNo: phoneNo },
+        ],
       });
-    } else {
-      User.findOne({ userName: userName }).then(
-        async (user) => {
-          if (user) {
-            return res.status(400).json({
-              message: "Username already exists",
-            });
-          } else {
-            //Check whether the password and confirm password are same
-            if (password === confirmPassword) {
-              const salt = await bcrypt.genSalt(
-                10
-              );
-              const hashedPassword =
-                await bcrypt.hash(password, salt);
-              // Create new user
-              const newUser = new User({
-                firstName,
-                lastName,
-                userName,
-                email,
-                password: hashedPassword,
-                gender,
-                bio,
-              });
-              // Save new user
-              await newUser
-                .save()
-                .then((user) => {
-                  // Register user in personal wall as Community wall
-                  const newPersonalWall =
-                    new PersonalWall({
-                      user_id: user._id,
-                      wall_id: user._id,
-                    });
-                  newPersonalWall
-                    .save()
-                    .then((personalWall) => {
-                      console.log(
-                        "Personal wall created successfully",
-                        personalWall
-                      );
-                    });
-                  return res.status(200).json({
-                    message:
-                      "User registered successfully",
-                    token: createToken(user),
-                  });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  return res.status(400).json({
-                    message: err,
-                  });
-                });
-            } else {
-              return res.status(400).json({
-                message:
-                  "Password and confirm password are not same",
-              });
-            }
-          }
-        }
-      );
+
+    if (userWithEmailOrUserNameOrPhone) {
+      return res.status(404).json({
+        message:
+          "Email or Username or Phone is already registered",
+      });
     }
-  });
+
+    /* Check if the password and confirm password are same */
+    if (password !== confirmPassword) {
+      return res.status(404).json({
+        message:
+          "Password and confirm password are not same",
+      });
+    }
+
+    /* Hash the password */
+    const salt = await bcrypt.genSalt(10);
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      salt
+    );
+
+    /* ---/////////////////////Generate Otp ///////////////////////
+    ---------------------------            ------------------------
+    */
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      upperCase: false,
+      specialChars: false,
+    });
+
+    // console.log(otp);
+    const otpResponse = await sendOtp(
+      phoneNo,
+      otp
+    );
+    console.log(otpResponse);
+
+    /* Create new user */
+    const newUser = new User({
+      firstName,
+      lastName,
+      userName,
+      email,
+      phoneNo,
+      password: hashedPassword,
+      gender,
+      bio,
+      otp,
+    });
+
+    /* Save new user */
+    await newUser.save();
+
+    /* Create token */
+    const token = createToken(newUser._id);
+
+    /* Register user in personal wall as Community wall */
+    const newPersonalWall = new PersonalWall({
+      user_id: newUser._id,
+    });
+    await newPersonalWall.save();
+    return res.status(201).json({
+      message: "User created successfully",
+      token: token,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(400).json({
+      message: "Something went wrong",
+    });
+  }
 };
 
-/* Login */
+/* -----------------------------------------------Login------------------------------------------- 
+-----------------------------------------------------------------------------------------------
+*/
 exports.login = (req, res) => {
   const { password, email } = req.body;
 
@@ -255,5 +270,40 @@ exports.deleteUser = async (req, res) => {
     res
       .status(500)
       .json({ message: error.message });
+  }
+};
+
+/*
+Login/Signup: Using Mobile Number
+OTP Based Login
+*/
+
+/* //////////------VERIFY OTP---------///////////// */
+exports.verifyOtp = async (req, res) => {
+  const { userId } = req.user;
+  const { otp } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    /* Verify Otp form database */
+    if (user.otp === otp) {
+      user.otp = "";
+      user.save();
+      return res.status(200).json({
+        message: "User verified successfully",
+      });
+    }
+    return res.status(400).json({
+      message: "You have entered wrong otp.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };

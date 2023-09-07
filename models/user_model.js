@@ -23,6 +23,10 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    phoneNo: {
+      type: String,
+      required: true,
+    },
     bio: {
       type: String,
     },
@@ -56,6 +60,10 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
+    },
+    otp: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

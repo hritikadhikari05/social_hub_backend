@@ -41,4 +41,11 @@ router.delete(
   auth_controller.deleteUser
 );
 
+/* Verify Otp */
+router.post(
+  "/verify-otp",
+  authCheck,
+  auth_controller.verifyOtp
+);
+
 module.exports = router;
