@@ -9,6 +9,7 @@ const community_routes = require("./routes/community_routes.js");
 const fileupload_routes =
   require("./routes/fileupload_routes.js").router;
 const bookmark_routes = require("./routes/bookmark_routes.js");
+require("dotenv").config();
 
 /* Middlewares */
 app.use(cors());
