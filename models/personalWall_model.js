@@ -9,10 +9,6 @@ const personalWallSchema = new Schema(
       type: mongoose.Types.ObjectId,
       required: true,
     },
-    wall_id: {
-      type: mongoose.Types.ObjectId,
-      required: true,
-    },
   },
   { timestamps: true }
 );

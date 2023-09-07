@@ -14,7 +14,7 @@ const createToken = (user) => {
 };
 
 /* Registration */
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   const {
     firstName,
     lastName,
@@ -26,82 +26,73 @@ exports.register = (req, res) => {
     bio,
   } = req.body;
 
-  //Register new user and check whether the user with email and username already exists using promise
+  /* Check if the email exists or not */
+  const userWithEmail = await User.findOne({
+    email: email,
+  });
 
-  User.findOne({ email: email }).then((user) => {
-    if (user) {
-      return res.status(400).json({
-        message: "Email already exists",
-      });
-    } else {
-      User.findOne({ userName: userName }).then(
-        async (user) => {
-          if (user) {
-            return res.status(400).json({
-              message: "Username already exists",
-            });
-          } else {
-            //Check whether the password and confirm password are same
-            if (password === confirmPassword) {
-              const salt = await bcrypt.genSalt(
-                10
-              );
-              const hashedPassword =
-                await bcrypt.hash(password, salt);
-              // Create new user
-              const newUser = new User({
-                firstName,
-                lastName,
-                userName,
-                email,
-                password: hashedPassword,
-                gender,
-                bio,
-              });
-              // Save new user
-              await newUser
-                .save()
-                .then((user) => {
-                  // Register user in personal wall as Community wall
-                  const newPersonalWall =
-                    new PersonalWall({
-                      user_id: user._id,
-                      wall_id: user._id,
-                    });
-                  newPersonalWall
-                    .save()
-                    .then((personalWall) => {
-                      console.log(
-                        "Personal wall created successfully",
-                        personalWall
-                      );
-                    });
-                  return res.status(200).json({
-                    message:
-                      "User registered successfully",
-                    token: createToken(user),
-                  });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  return res.status(400).json({
-                    message: err,
-                  });
-                });
-            } else {
-              return res.status(400).json({
-                message:
-                  "Password and confirm password are not same",
-              });
-            }
-          }
-        }
-      );
-    }
+  if (userWithEmail) {
+    return res.status(404).json({
+      message: "Email is already registered",
+    });
+  }
+
+  /* Check if the username exists or not */
+  const userWithUserName = await User.findOne({
+    userName: userName,
+  });
+
+  if (userWithUserName) {
+    return res.status(404).json({
+      message: "Username is already registered",
+    });
+  }
+
+  /* Check if the password and confirm password are same */
+  if (password !== confirmPassword) {
+    return res.status(404).json({
+      message:
+        "Password and confirm password are not same",
+    });
+  }
+
+  /* Hash the password */
+  const salt = await bcrypt.genSalt(10);
+
+  const hashedPassword = await bcrypt.hash(
+    password,
+    salt
+  );
+
+  /* Create new user */
+  const newUser = new User({
+    firstName,
+    lastName,
+    userName,
+    email,
+    password: hashedPassword,
+    gender,
+    bio,
+  });
+
+  /* Save new user */
+  await newUser.save();
+
+  /* Register user in personal wall as Community wall */
+  const newPersonalWall = new PersonalWall({
+    user_id: newUser._id,
+  });
+
+  await newPersonalWall.save();
+
+  return res.status(201).json({
+    message: "User created successfully",
   });
 };
 
-/* Login */
+/* -----------------------------------------------Login------------------------------------------- 
+-----------------------------------------------------------------------------------------------
+*/
 exports.login = (req, res) => {
   const { password, email } = req.body;
 
@@ -257,3 +248,10 @@ exports.deleteUser = async (req, res) => {
       .json({ message: error.message });
   }
 };
+
+/*
+Login/Signup: Using Mobile Number
+OTP Based Login
+*/
+
+/* Register New User */
