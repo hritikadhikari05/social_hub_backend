@@ -557,7 +557,7 @@ exports.upvotePost = async (req, res) => {
       upvotePost.upvotes.pull(userId);
       upvotePost.upvotes_count--;
       upvotePost.save();
-      return res.status(400).json({
+      return res.status(200).json({
         message:
           "You have taken back your upvote",
       });
@@ -606,7 +606,7 @@ exports.downvotePost = async (req, res) => {
       downvotePost.downvotes.pull(userId);
       downvotePost.downvotes_count--;
       downvotePost.save();
-      return res.status(400).json({
+      return res.status(200).json({
         message:
           "You have taken back your downvote",
       });
