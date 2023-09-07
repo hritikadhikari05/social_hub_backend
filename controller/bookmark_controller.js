@@ -34,6 +34,7 @@ exports.addBookmark = async (req, res) => {
       user_id: userId,
       post: postId,
     });
+
     if (bookmarks.length > 0) {
       return res.status(400).json({
         message: "You have already bookmarked",

@@ -9,12 +9,13 @@ exports.addReportsField = async (req, res) => {
     const posts = await Post.updateMany(
       {},
       {
-        $set: {
-          is_bookmarked: false,
+        $unset: {
+          is_bookmarked: 1,
         },
       },
       { multi: true }
     );
+    console.log(posts);
     res.status(201).json({
       message: "Post successfully added",
     });
