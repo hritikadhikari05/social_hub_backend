@@ -5,10 +5,10 @@ const authCheck = require("../middlewares/auth_middleware");
 const bookmarkController = require("../controller/bookmark_controller");
 
 /* Change user field to user_id in Bookmark model */
-router.post(
-  "/change-user-field",
-  bookmarkController.changeUserField
-);
+// router.post(
+//   "/change-user-field",
+//   bookmarkController.changeUserField
+// );
 
 /* Add BookMarks */
 router.post(

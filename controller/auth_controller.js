@@ -62,6 +62,22 @@ exports.register = async (req, res) => {
       salt
     );
 
+    /* ---/////////////////////Generate Otp ///////////////////////
+    ---------------------------            ------------------------
+    */
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      upperCase: false,
+      specialChars: false,
+    });
+
+    // console.log(otp);
+    const otpResponse = await sendOtp(
+      phoneNo,
+      otp
+    );
+    console.log(otpResponse);
+
     /* Create new user */
     const newUser = new User({
       firstName,
@@ -72,6 +88,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       gender,
       bio,
+      otp,
     });
 
     /* Save new user */
@@ -84,24 +101,7 @@ exports.register = async (req, res) => {
     const newPersonalWall = new PersonalWall({
       user_id: newUser._id,
     });
-
-    /* Generate Otp */
-
     await newPersonalWall.save();
-
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      upperCase: false,
-      specialChars: false,
-    });
-
-    console.log(otp);
-    const otpResponse = await sendOtp(
-      phoneNo,
-      otp
-    );
-    console.log(otpResponse);
-
     return res.status(201).json({
       message: "User created successfully",
       token: token,
@@ -278,4 +278,32 @@ Login/Signup: Using Mobile Number
 OTP Based Login
 */
 
-/* Register New User */
+/* //////////------VERIFY OTP---------///////////// */
+exports.verifyOtp = async (req, res) => {
+  const { userId } = req.user;
+  const { otp } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    /* Verify Otp form database */
+    if (user.otp === otp) {
+      user.otp = "";
+      user.save();
+      return res.status(200).json({
+        message: "User verified successfully",
+      });
+    }
+    return res.status(400).json({
+      message: "You have entered wrong otp.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

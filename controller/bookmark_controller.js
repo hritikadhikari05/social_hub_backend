@@ -1,28 +1,28 @@
 const Bookmark = require("../models/bookmarks_model");
 
 /* Change user field to user_id in Bookmark model */
-exports.changeUserField = async (req, res) => {
-  try {
-    const bookmarks = await Bookmark.updateMany(
-      {},
-      {
-        $rename: {
-          user: "user_id",
-        },
-      },
-      { multi: true }
-    );
+// exports.changeUserField = async (req, res) => {
+//   try {
+//     const bookmarks = await Bookmark.updateMany(
+//       {},
+//       {
+//         $rename: {
+//           user: "user_id",
+//         },
+//       },
+//       { multi: true }
+//     );
 
-    return res.status(200).json({
-      message: "User field changed to user_id",
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      message: "Something went wrong",
-    });
-  }
-};
+//     return res.status(200).json({
+//       message: "User field changed to user_id",
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).json({
+//       message: "Something went wrong",
+//     });
+//   }
+// };
 
 /* Add selected post to the bookmark */
 exports.addBookmark = async (req, res) => {
@@ -89,7 +89,9 @@ exports.removeBookmark = async (req, res) => {
   }
 };
 
-/* Get all the bookmarked posts with logged in user and latest bookmarked post */
+/* Get all the bookmarked posts with logged in 
+user and latest bookmarked post 
+*/
 exports.getBookmarks = async (req, res) => {
   const { userId } = req.user;
 

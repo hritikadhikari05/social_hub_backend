@@ -73,26 +73,6 @@ exports.getPost = async (req, res) => {
   const { postId } = req.params;
 
   try {
-    // await Post.findById(postId)
-    //   .then((post) => {
-    //     if (!post) {
-    //       return res.status(404).json({
-    //         message: "Post not found",
-    //       });
-    //     }
-    //     post.view_count++;
-    //     post.save();
-    //     return res.status(200).json({
-    //       message: "Post found",
-    //       data: post,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     return res.status(400).json({
-    //       message: "No post found",
-    //     });
-    //   });
     const post = await Post.findById(
       postId
     ).populate({
