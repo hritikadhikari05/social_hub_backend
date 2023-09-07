@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Post = require("../models/post_model");
 const { post } = require("../routes/auth_routes");
 
@@ -531,32 +532,45 @@ exports.upvotePost = async (req, res) => {
   const { userId } = req.user;
 
   try {
-    await Post.findById(postId)
-      .then((post) => {
-        if (!post) {
-          return res.status(404).json({
-            message: "Post not found",
-          });
-        }
-        if (post.upvotes.includes(userId)) {
-          return res.status(400).json({
-            message: "You have already upvoted",
-          });
-        }
-        post.upvotes.push(userId);
-        post.upvotes_count++;
-        post.save();
-        return res.status(200).json({
-          message: "Post upvoted successfully",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: "No post found",
-        });
+    const upvotePost = await Post.findById(
+      postId
+    );
+
+    if (!upvotePost) {
+      console.log("hello");
+      return res.status(404).json({
+        message: "No post found",
       });
+    }
+    /* Check if ther user has downvoted the 
+      same post ::
+      Yes: delete from downvote and decrease count
+      No: Upvote Post
+    */
+    if (upvotePost.downvotes.includes(userId)) {
+      upvotePost.downvotes.pull(userId);
+      upvotePost.downvotes_count--;
+      upvotePost.save();
+    }
+
+    if (upvotePost.upvotes.includes(userId)) {
+      upvotePost.upvotes.pull(userId);
+      upvotePost.upvotes_count--;
+      upvotePost.save();
+      return res.status(400).json({
+        message:
+          "You have taken back your upvote",
+      });
+    }
+    upvotePost.upvotes.push(userId);
+    upvotePost.upvotes_count++;
+    upvotePost.save();
+
+    return res.status(200).json({
+      message: "Sucessfully voted",
+    });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
