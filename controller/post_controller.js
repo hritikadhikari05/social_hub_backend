@@ -5,21 +5,21 @@ const { post } = require("../routes/auth_routes");
 /* Add reports field to the post model */
 exports.addReportsField = async (req, res) => {
   try {
-    for (i = 0; i <= 80; i++) {
-      const posts = new Post({
-        title: `This is the reddit post ${i}`,
-        content:
-          "This its the content of the reddit post for checking the comments",
-        author: req.user.userId,
-        community_id: req.user.userId,
-      });
-      await posts.save();
-    }
-
+    /* Add isbookmarked field to the post model */
+    const posts = await Post.updateMany(
+      {},
+      {
+        $set: {
+          is_bookmarked: false,
+        },
+      },
+      { multi: true }
+    );
     res.status(201).json({
       message: "Post successfully added",
     });
   } catch (error) {
+    console.log(error.message);
     res
       .status(500)
       .json({ message: error.message });

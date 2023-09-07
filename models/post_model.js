@@ -73,6 +73,11 @@ const postSchema = new Schema(
       required: true,
       default: false,
     },
+    is_bookmarked: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );
