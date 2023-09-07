@@ -3,29 +3,29 @@ const Post = require("../models/post_model");
 const { post } = require("../routes/auth_routes");
 
 /* Add reports field to the post model */
-exports.addReportsField = async (req, res) => {
-  try {
-    /* Add isbookmarked field to the post model */
-    const posts = await Post.updateMany(
-      {},
-      {
-        $unset: {
-          is_bookmarked: 1,
-        },
-      },
-      { multi: true }
-    );
-    console.log(posts);
-    res.status(201).json({
-      message: "Post successfully added",
-    });
-  } catch (error) {
-    console.log(error.message);
-    res
-      .status(500)
-      .json({ message: error.message });
-  }
-};
+// exports.addReportsField = async (req, res) => {
+//   try {
+//     /* Add isbookmarked field to the post model */
+//     const posts = await Post.updateMany(
+//       {},
+//       {
+//         $unset: {
+//           is_bookmarked: 1,
+//         },
+//       },
+//       { multi: true }
+//     );
+//     console.log(posts);
+//     res.status(201).json({
+//       message: "Post successfully added",
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     res
+//       .status(500)
+//       .json({ message: error.message });
+//   }
+// };
 
 /* Create Post */
 exports.createPost = async (req, res) => {
