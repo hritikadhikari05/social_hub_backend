@@ -1,23 +1,23 @@
 const { default: mongoose } = require("mongoose");
 const Post = require("../models/post_model");
+const User = require("../models/user_model");
 const { post } = require("../routes/auth_routes");
 
 /* Add reports field to the post model */
 exports.addReportsField = async (req, res) => {
   try {
     /* Add isbookmarked field to the post model */
-    const posts = await Post.updateMany(
+    const posts = await User.updateMany(
       {},
       {
-        $unset: {
-          is_bookmarked: 1,
+        $set: {
+          otp: "",
         },
       },
       { multi: true }
     );
-    console.log(posts);
     res.status(201).json({
-      message: "Post successfully added",
+      message: "User updated successfully added",
     });
   } catch (error) {
     console.log(error.message);

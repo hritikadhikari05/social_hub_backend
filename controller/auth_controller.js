@@ -3,6 +3,8 @@ const Post = require("../models/post_model");
 const PersonalWall = require("../models/personalWall_model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const { sendOtp } = require("../utils/utils");
 
 /*create token */
 const createToken = (user) => {
@@ -23,71 +25,93 @@ exports.register = async (req, res) => {
     password,
     gender,
     confirmPassword,
+    phoneNo,
     bio,
   } = req.body;
+  try {
+    /* Check if the email exists or not */
+    const userWithEmailOrUserNameOrPhone =
+      await User.findOne({
+        $or: [
+          { userName: userName },
+          { email: email },
+          { phoneNo: phoneNo },
+        ],
+      });
 
-  /* Check if the email exists or not */
-  const userWithEmail = await User.findOne({
-    email: email,
-  });
+    if (userWithEmailOrUserNameOrPhone) {
+      return res.status(404).json({
+        message:
+          "Email or Username or Phone is already registered",
+      });
+    }
 
-  if (userWithEmail) {
-    return res.status(404).json({
-      message: "Email is already registered",
+    /* Check if the password and confirm password are same */
+    if (password !== confirmPassword) {
+      return res.status(404).json({
+        message:
+          "Password and confirm password are not same",
+      });
+    }
+
+    /* Hash the password */
+    const salt = await bcrypt.genSalt(10);
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      salt
+    );
+
+    /* Create new user */
+    const newUser = new User({
+      firstName,
+      lastName,
+      userName,
+      email,
+      phoneNo,
+      password: hashedPassword,
+      gender,
+      bio,
+    });
+
+    /* Save new user */
+    await newUser.save();
+
+    /* Create token */
+    const token = createToken(newUser._id);
+
+    /* Register user in personal wall as Community wall */
+    const newPersonalWall = new PersonalWall({
+      user_id: newUser._id,
+    });
+
+    /* Generate Otp */
+
+    await newPersonalWall.save();
+
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      upperCase: false,
+      specialChars: false,
+    });
+
+    console.log(otp);
+    const otpResponse = await sendOtp(
+      phoneNo,
+      otp
+    );
+    console.log(otpResponse);
+
+    return res.status(201).json({
+      message: "User created successfully",
+      token: token,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(400).json({
+      message: "Something went wrong",
     });
   }
-
-  /* Check if the username exists or not */
-  const userWithUserName = await User.findOne({
-    userName: userName,
-  });
-
-  if (userWithUserName) {
-    return res.status(404).json({
-      message: "Username is already registered",
-    });
-  }
-
-  /* Check if the password and confirm password are same */
-  if (password !== confirmPassword) {
-    return res.status(404).json({
-      message:
-        "Password and confirm password are not same",
-    });
-  }
-
-  /* Hash the password */
-  const salt = await bcrypt.genSalt(10);
-
-  const hashedPassword = await bcrypt.hash(
-    password,
-    salt
-  );
-
-  /* Create new user */
-  const newUser = new User({
-    firstName,
-    lastName,
-    userName,
-    email,
-    password: hashedPassword,
-    gender,
-    bio,
-  });
-
-  /* Save new user */
-  await newUser.save();
-
-  /* Register user in personal wall as Community wall */
-  const newPersonalWall = new PersonalWall({
-    user_id: newUser._id,
-  });
-
-  await newPersonalWall.save();
-
-  return res.status(201).json({
-    message: "User created successfully",
-  });
 };
 
 /* -----------------------------------------------Login------------------------------------------- 
