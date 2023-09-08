@@ -65,18 +65,18 @@ exports.register = async (req, res) => {
     /* ---/////////////////////Generate Otp ///////////////////////
     ---------------------------            ------------------------
     */
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      upperCase: false,
-      specialChars: false,
-    });
+    // const otp = otpGenerator.generate(6, {
+    //   digits: true,
+    //   upperCase: false,
+    //   specialChars: false,
+    // });
 
-    // console.log(otp);
-    const otpResponse = await sendOtp(
-      phoneNo,
-      otp
-    );
-    console.log(otpResponse);
+    // // console.log(otp);
+    // const otpResponse = await sendOtp(
+    //   phoneNo,
+    //   otp
+    // );
+    // console.log(otpResponse);
 
     /* Create new user */
     const newUser = new User({
