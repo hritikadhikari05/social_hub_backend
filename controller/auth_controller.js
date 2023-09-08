@@ -88,7 +88,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       gender,
       bio,
-      otp,
+      // otp,
     });
 
     /* Save new user */
