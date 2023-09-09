@@ -25,22 +25,34 @@ exports.addReportsField = async (req, res) => {
   //     .json({ message: error.message });
   // }
 
-  // Add multiple posts to the post schema
   const { userId } = req.user;
   try {
-    for (i = 0; i < 50; i++) {
-      const newPost = new Post({
-        title: "This is post title number" + i,
-        content:
-          "This is post content number" + i,
-        author: userId,
-        community_id: userId,
-        is_sticked: false,
-        tags: [],
-      });
+    /*------- Add multiple posts to the post schema------------*/
+    // for (i = 0; i < 50; i++) {
+    //   const newPost = new Post({
+    //     title: "This is post title number" + i,
+    //     content:
+    //       "This is post content number" + i,
+    //     author: userId,
+    //     community_id: userId,
+    //     is_sticked: false,
+    //     tags: [],
+    //   });
 
-      await newPost.save();
-    }
+    //   await newPost.save();
+    // }
+
+    /* Add comment_count field to the post model */
+    const posts = await Post.updateMany(
+      {},
+      {
+        $set: {
+          comment_count: 0,
+        },
+      },
+      { multi: true }
+    );
+
     res.status(201).json({
       message: "Post added successfully",
     });

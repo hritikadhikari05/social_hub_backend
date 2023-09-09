@@ -63,6 +63,11 @@ const postSchema = new Schema(
       required: true,
       default: 0,
     },
+    comment_count: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     tags: {
       type: Array,
       required: true,
