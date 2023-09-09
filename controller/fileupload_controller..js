@@ -17,7 +17,7 @@ exports.uploadFile = async (req, res) => {
       fileInfo: req.file,
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
       error: error,
@@ -64,7 +64,7 @@ exports.deleteFile = async (req, res) => {
       keyToDelete
     )
       .then((val) => {
-        res.send(200).json({
+        res.status(200).json({
           message: `File with ${keyToDelete} sucessfully deleted from ${bucketName}`,
         });
       })
