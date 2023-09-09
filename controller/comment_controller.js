@@ -2,7 +2,7 @@ const Admin = require("../models/admin_model");
 const Moderator = require("../models/moderator_model");
 const PersonalWall = require("../models/personalWall_model");
 const Comment = require("../models/comment_model");
-
+const Post = require("../models/post_model");
 /* Create Comment */
 exports.createComment = async (req, res) => {
   try {
@@ -56,22 +56,22 @@ exports.createComment = async (req, res) => {
       parent_type,
       parent_id,
     });
-    newComment
-      .save()
-      .then((comment) => {
-        res.status(200).json({
-          message: "Comment Created Successfully",
-          data: newComment,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json({
-          message: "Error adding comment",
-        });
-      });
+    newComment.save();
+
+    /*Increase the comment count of the post*/
+    const post = await Post.findById(post_id);
+    post.comment_count++;
+    post.save();
+
+    res.status(200).json({
+      message: "Comment Created Successfully",
+      data: newComment,
+    });
   } catch (error) {
-    res.status(500).json(error);
+    console.log(error.message);
+    res
+      .status(500)
+      .json({ message: "Something Went Wrong." });
   }
 };
 

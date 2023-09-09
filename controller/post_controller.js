@@ -42,17 +42,6 @@ exports.addReportsField = async (req, res) => {
     //   await newPost.save();
     // }
 
-    /* Add comment_count field to the post model */
-    const posts = await Post.updateMany(
-      {},
-      {
-        $set: {
-          comment_count: 0,
-        },
-      },
-      { multi: true }
-    );
-
     res.status(201).json({
       message: "Post added successfully",
     });
