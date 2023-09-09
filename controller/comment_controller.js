@@ -122,6 +122,104 @@ exports.getCommentReplies = async (req, res) => {
   }
 };
 
+/* Upvote Comment */
+exports.upvoteComment = async (req, res) => {
+  try {
+    const { comment_id } = req.params;
+    const { userId } = req.user;
+
+    const comment = await Comment.findById(
+      comment_id
+    );
+
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ message: "No comment found" });
+    }
+
+    /* Check if the user has downvoted or not */
+    if (comment.downvotes.includes(userId)) {
+      comment.downvotes.pull(userId);
+      comment.downvotes_count--;
+    }
+
+    /* Check if the user has already upvoted or not */
+    if (comment.upvotes.includes(userId)) {
+      comment.upvotes.pull(userId);
+      comment.upvotes_count--;
+      comment.save();
+      return res.status(200).json({
+        message:
+          "You have taken back your upvote",
+      });
+    }
+
+    /* If the user has neither upvoted nor downvoted then 
+    push the user id to the upvotes and increase the count
+    */
+    comment.upvotes.push(userId);
+    comment.upvotes_count++;
+    comment.save();
+
+    return res.status(200).json({
+      message: "Comment Upvoted Successfully",
+      data: comment,
+    });
+  } catch (error) {
+    res.status(500).json("Something Went Wrong.");
+  }
+};
+
+/* Downvote Comment */
+exports.downvoteComment = async (req, res) => {
+  try {
+    const { comment_id } = req.params;
+    const { userId } = req.user;
+
+    /* Get commet by comment Id */
+    const comment = await Comment.findById(
+      comment_id
+    );
+
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ message: "No comment found" });
+    }
+
+    /* Check if the user has upvoted or not */
+    if (comment.upvotes.includes(userId)) {
+      comment.upvotes.pull(userId);
+      comment.upvotes_count--;
+    }
+
+    /* Check if the user has already upvoted or not */
+    if (comment.downvotes.includes(userId)) {
+      comment.downvotes.pull(userId);
+      comment.downvotes_count--;
+      comment.save();
+      return res.status(200).json({
+        message:
+          "You have taken back your downvote",
+      });
+    }
+
+    /* If the user has neither upvoted nor downvoted then 
+    push the user id to the upvotes and increase the count
+    */
+    comment.downvotes.push(userId);
+    comment.downvotes_count++;
+    comment.save();
+    res.status(200).json({
+      message: "Comment downvoted Successfully",
+      data: comment,
+    });
+  } catch (error) {
+    res.status(500).json("Something Went Wrong.");
+  }
+};
+
 /* Delete Comment and their replies */
 exports.deleteComment = async (req, res) => {
   try {

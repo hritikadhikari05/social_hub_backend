@@ -3,21 +3,46 @@ const Post = require("../models/post_model");
 const User = require("../models/user_model");
 const { post } = require("../routes/auth_routes");
 
-/* Add reports field to the post model */
 exports.addReportsField = async (req, res) => {
+  // try {
+  //   /* Add isbookmarked field to the post model */
+  //   const posts = await User.updateMany(
+  //     {},
+  //     {
+  //       $set: {
+  //         otp: "",
+  //       },
+  //     },
+  //     { multi: true }
+  //   );
+  //   res.status(201).json({
+  //     message: "User updated successfully added",
+  //   });
+  // } catch (error) {
+  //   console.log(error.message);
+  //   res
+  //     .status(500)
+  //     .json({ message: error.message });
+  // }
+
+  // Add multiple posts to the post schema
+  const { userId } = req.user;
   try {
-    /* Add isbookmarked field to the post model */
-    const posts = await User.updateMany(
-      {},
-      {
-        $set: {
-          otp: "",
-        },
-      },
-      { multi: true }
-    );
+    for (i = 0; i < 50; i++) {
+      const newPost = new Post({
+        title: "This is post title number" + i,
+        content:
+          "This is post content number" + i,
+        author: userId,
+        community_id: userId,
+        is_sticked: false,
+        tags: [],
+      });
+
+      await newPost.save();
+    }
     res.status(201).json({
-      message: "User updated successfully added",
+      message: "Post added successfully",
     });
   } catch (error) {
     console.log(error.message);

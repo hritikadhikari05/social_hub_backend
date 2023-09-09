@@ -25,6 +25,20 @@ router.get(
   commentController.getCommentReplies
 );
 
+/* Upvotes Comment */
+router.post(
+  "/upvote-comment/:comment_id",
+  authCheck,
+  commentController.upvoteComment
+);
+
+/* Downvote Comment */
+router.post(
+  "/downvote-comment/:comment_id",
+  authCheck,
+  commentController.downvoteComment
+);
+
 /* Delete Comment */
 router.delete(
   "/delete-comment/:comment_id",
