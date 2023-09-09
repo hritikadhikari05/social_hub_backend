@@ -8,9 +8,9 @@ const spacesEndpoint = new AWS.Endpoint(
 ); // Replace with your Space's endpoint
 const s3 = new AWS.S3({
   endpoint: spacesEndpoint,
-  accessKeyId: process.env.aws_access_key_id,
+  accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey:
-    process.env.aws_secret_access_key,
+    process.env.AWS_SECRET_ACCESS_KEY,
 });
 
 // Configure multer
