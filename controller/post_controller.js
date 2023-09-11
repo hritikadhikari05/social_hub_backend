@@ -44,15 +44,15 @@ exports.addReportsField = async (req, res) => {
     // }
 
     /* Add comment_count field to the post model */
-    const comment = await Comment.updateMany(
-      {},
-      {
-        $set: {
-          replies_count: 0,
-        },
-      },
-      { multi: true }
-    );
+    // const comment = await Comment.updateMany(
+    //   {},
+    //   {
+    //     $set: {
+    //       replies_count: 0,
+    //     },
+    //   },
+    //   { multi: true }
+    // );
 
     // console.log(comment);
 
