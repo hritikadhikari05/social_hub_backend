@@ -17,6 +17,18 @@ exports.createComment = async (req, res) => {
     if (parent_type == "POST") {
       parent_id = post_id;
     } else if (parent_type == "COMMENT") {
+      /* Find comment by id and increase the reply count */
+      const comment = await Comment.findById(
+        comment_id
+      );
+      if (!comment) {
+        return res.status(404).json({
+          message:
+            "No comment found with this id",
+        });
+      }
+      comment.replies_count++;
+      await comment.save();
       parent_id = comment_id;
     } else {
       res.status(400).json({

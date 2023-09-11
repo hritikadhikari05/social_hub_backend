@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const Post = require("../models/post_model");
 const User = require("../models/user_model");
 const { post } = require("../routes/auth_routes");
+const Comment = require("../models/comment_model");
 
 exports.addReportsField = async (req, res) => {
   // try {
@@ -43,18 +44,20 @@ exports.addReportsField = async (req, res) => {
     // }
 
     /* Add comment_count field to the post model */
-    const posts = await Post.updateMany(
+    const comment = await Comment.updateMany(
       {},
       {
         $set: {
-          comment_count: 0,
+          replies_count: 0,
         },
       },
       { multi: true }
     );
 
+    // console.log(comment);
+
     res.status(201).json({
-      message: "Post added successfully",
+      message: "Comment field added successfully",
     });
   } catch (error) {
     console.log(error.message);

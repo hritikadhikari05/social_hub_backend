@@ -58,6 +58,11 @@ const commentSchema = new Schema(
       type: mongoose.Types.ObjectId,
       required: true,
     },
+    replies_count: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
