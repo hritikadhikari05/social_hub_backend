@@ -509,6 +509,44 @@ exports.getTrendingPosts = async (req, res) => {
   }
 };
 
+/* Get Most Viewed Posts */
+exports.getMostViewedPosts = async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+  const page = parseInt(req.query.page) || 1; //Limit the page
+  const skip = (page - 1) * limit; // Skip the post
+  try {
+    /* Get the count */
+    const totalItems =
+      await Post.countDocuments().sort({
+        view_count: -1,
+      });
+
+    const posts = await Post.find()
+      .sort({ view_count: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "author",
+        select:
+          "userName firstName lastName bio profilePic",
+      });
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
+      });
+    }
+    return res.status(200).json({
+      message: "Posts found",
+      data: posts,
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 /* Delete post by id */
 exports.deletePost = async (req, res) => {
   const { postId } = req.params;

@@ -88,6 +88,13 @@ router.get(
   post_controller.getTrendingPosts
 );
 
+/* Get Most Viewed Post */
+router.get(
+  "/get-most-viewed-posts",
+  authCheck,
+  post_controller.getMostViewedPosts
+);
+
 /* Upvote Post */
 router.post(
   "/upvote-post/:postId",
