@@ -562,12 +562,19 @@ exports.deletePost = async (req, res) => {
         message: "Post not found",
       });
     }
+    // console.log(post.author, userId);
     if (post.author != userId) {
       return res.status(401).json({
         message: "You are not authorized",
       });
     }
     post.deleteOne();
+
+    /* Delete all the comments of the post */
+    await Comment.deleteMany({
+      post_id: postId,
+    });
+
     return res.status(200).json({
       message: "Post deleted successfully",
     });
