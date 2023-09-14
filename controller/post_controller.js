@@ -4,6 +4,7 @@ const User = require("../models/user_model");
 const { post } = require("../routes/auth_routes");
 const Comment = require("../models/comment_model");
 const BookMarks = require("../models/bookmarks_model");
+const PostService = require("../services/post_service");
 
 exports.addReportsField = async (req, res) => {
   // try {
@@ -181,22 +182,11 @@ exports.getAllPosts = async (req, res) => {
     }
 
     /* Check if the post is bookmarked by the user and return isBookmarked in repsonse */
-    const postWithBookmark = await Promise.all(
-      post.map(async (post) => {
-        const isBookmarked =
-          await BookMarks.findOne({
-            user_id: req.user.userId,
-            post: post._id,
-          });
-        return {
-          ...post._doc,
-          isBookmarked: isBookmarked
-            ? true
-            : false,
-        };
-      })
-    );
-    // console.log(postWithBookmark);
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        post,
+        req.user.userId
+      );
 
     return res.status(200).json({
       message: "Posts found",
@@ -380,11 +370,11 @@ exports.getAllPostsByUser = async (req, res) => {
   try {
     /* Get the count */
     const totalItems = await Post.countDocuments({
-      author_id: userId,
+      author: userId,
     });
 
     const posts = await Post.find({
-      author_id: userId,
+      author: userId,
     })
       .skip(skip)
       .limit(limit)
@@ -399,9 +389,16 @@ exports.getAllPostsByUser = async (req, res) => {
         message: "Posts not found",
       });
     }
+
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        posts,
+        req.user.userId
+      );
+
     return res.status(200).json({
       message: "Posts found",
-      data: posts,
+      data: postWithBookmark,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
@@ -443,9 +440,16 @@ exports.getAllPostsByCommunity = async (
         message: "Posts not found",
       });
     }
+
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        posts,
+        req.user.userId
+      );
+
     return res.status(200).json({
       message: "Posts found",
-      data: posts,
+      data: postWithBookmark,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
@@ -481,9 +485,16 @@ exports.getLatestPosts = async (req, res) => {
         message: "Posts not found",
       });
     }
+
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        posts,
+        req.user.userId
+      );
+
     return res.status(200).json({
       message: "Posts found",
-      data: posts,
+      data: postWithBookmark,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
@@ -519,9 +530,16 @@ exports.getTrendingPosts = async (req, res) => {
         message: "Posts not found",
       });
     }
+
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        posts,
+        req.user.userId
+      );
+
     return res.status(200).json({
       message: "Posts found",
-      data: posts,
+      data: postWithBookmark,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
@@ -557,9 +575,16 @@ exports.getMostViewedPosts = async (req, res) => {
         message: "Posts not found",
       });
     }
+
+    const postWithBookmark =
+      await PostService.addBookmarkFieldToThepost(
+        posts,
+        req.user.userId
+      );
+
     return res.status(200).json({
       message: "Posts found",
-      data: posts,
+      data: postWithBookmark,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
