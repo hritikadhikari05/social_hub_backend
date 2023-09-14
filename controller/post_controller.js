@@ -3,6 +3,7 @@ const Post = require("../models/post_model");
 const User = require("../models/user_model");
 const { post } = require("../routes/auth_routes");
 const Comment = require("../models/comment_model");
+const BookMarks = require("../models/bookmarks_model");
 
 exports.addReportsField = async (req, res) => {
   // try {
@@ -179,9 +180,27 @@ exports.getAllPosts = async (req, res) => {
       });
     }
 
+    /* Check if the post is bookmarked by the user and return isBookmarked in repsonse */
+    const postWithBookmark = await Promise.all(
+      post.map(async (post) => {
+        const isBookmarked =
+          await BookMarks.findOne({
+            user_id: req.user.userId,
+            post: post._id,
+          });
+        return {
+          ...post._doc,
+          isBookmarked: isBookmarked
+            ? true
+            : false,
+        };
+      })
+    );
+    // console.log(postWithBookmark);
+
     return res.status(200).json({
       message: "Posts found",
-      data: post,
+      data: postWithBookmark,
       hits: post.length,
       totalPages: Math.ceil(totalItems / limit),
     });
