@@ -1,7 +1,4 @@
-const {
-  deleteFileFromSpace,
-  checkFileExistsInSpace,
-} = require("../utils/file_upload");
+const { deleteFileFromSpace, checkFileExistsInSpace } = require("../utils/file_upload");
 
 exports.uploadFile = async (req, res) => {
   // console.log(process.env.aws_access_key_id);
@@ -53,16 +50,10 @@ exports.deleteFile = async (req, res) => {
   const keyToDelete = `uploads/${req.params.name}`;
 
   /* delete file from digitalocean spaces */
-  const fileExists = await checkFileExistsInSpace(
-    bucketName,
-    keyToDelete
-  );
+  const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
 
   if (fileExists) {
-    await deleteFileFromSpace(
-      bucketName,
-      keyToDelete
-    )
+    await deleteFileFromSpace(bucketName, keyToDelete)
       .then((val) => {
         res.status(200).json({
           message: `File with ${keyToDelete} sucessfully deleted from ${bucketName}`,
