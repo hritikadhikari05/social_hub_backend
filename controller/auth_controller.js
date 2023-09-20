@@ -8,59 +8,36 @@ const { sendOtp } = require("../utils/utils");
 
 /*create token */
 const createToken = (user) => {
-  return jwt.sign(
-    { userId: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "365d" }
-  );
+  return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "365d" });
 };
 
 /* Registration */
 exports.register = async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    userName,
-    email,
-    password,
-    gender,
-    confirmPassword,
-    phoneNo,
-    bio,
-  } = req.body;
+  const { firstName, lastName, userName, email, password, gender, confirmPassword, phoneNo, bio } =
+    req.body;
   try {
     /* Check if the email exists or not */
-    const userWithEmailOrUserNameOrPhone =
-      await User.findOne({
-        $or: [
-          { userName: userName },
-          { email: email },
-          { phoneNo: phoneNo },
-        ],
-      });
+    const userWithEmailOrUserNameOrPhone = await User.findOne({
+      $or: [{ userName: userName }, { email: email }, { phoneNo: phoneNo }],
+    });
 
     if (userWithEmailOrUserNameOrPhone) {
       return res.status(404).json({
-        message:
-          "Email or Username or Phone is already registered",
+        message: "Email or Username or Phone is already registered",
       });
     }
 
     /* Check if the password and confirm password are same */
     if (password !== confirmPassword) {
       return res.status(404).json({
-        message:
-          "Password and confirm password are not same",
+        message: "Password and confirm password are not same",
       });
     }
 
     /* Hash the password */
     const salt = await bcrypt.genSalt(10);
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      salt
-    );
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     /* ---/////////////////////Generate Otp ///////////////////////
     ---------------------------            ------------------------
@@ -120,25 +97,23 @@ exports.register = async (req, res) => {
 exports.login = (req, res) => {
   const { password, email } = req.body;
 
-  // Find user by email or username
-  User.findOne({
-    $or: [{ userName: email }, { email: email }],
-  }).then((user) => {
-    // Check if user exists
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found",
-      });
-    }
+  try {
+    // Find user by email or username
+    User.findOne({
+      $or: [{ userName: email }, { email: email }],
+    }).then((user) => {
+      // Check if user exists
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
 
-    // Check if password matches
-    bcrypt
-      .compare(password, user.password)
-      .then((isMatch) => {
+      // Check if password matches
+      bcrypt.compare(password, user.password).then((isMatch) => {
         if (isMatch) {
           return res.status(200).json({
-            message:
-              "User logged in successfully",
+            message: "User logged in successfully",
             token: createToken(user),
           });
         } else {
@@ -147,7 +122,10 @@ exports.login = (req, res) => {
           });
         }
       });
-  });
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server error" });
+  }
 };
 
 /* Reset Password */
@@ -163,16 +141,12 @@ exports.resetPassword = (req, res) => {
           .hash(password, salt)
           .then((hashedPassword) => {
             // User.findByIdAndUpdate()
-            User.findByIdAndUpdate(
-              req.user.userId,
-              {
-                password: hashedPassword,
-              }
-            )
+            User.findByIdAndUpdate(req.user.userId, {
+              password: hashedPassword,
+            })
               .then((user) => {
                 return res.status(200).json({
-                  message:
-                    "Password reset successfully",
+                  message: "Password reset successfully",
                   token: createToken(user),
                 });
               })
@@ -267,9 +241,7 @@ exports.deleteUser = async (req, res) => {
       message: "User successfully deleted.",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
