@@ -125,11 +125,15 @@ exports.getPost = async (req, res) => {
     post.save();
 
     /* Check if the post is bookmarked by the user and return isBookmarked in repsonse */
-    const postWithBookmark = await BookMarks.findOne({ user_id: req.user.userId, post: postId });
+    // const postWithBookmark = await BookMarks.findOne({ user_id: req.user.userId, post: postId });
+    const postWithBookmark = await PostService.addBookmarkFieldToTheSinglePost(
+      post,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Post found",
-      data: { ...post._doc, isBookmarked: postWithBookmark ? true : false },
+      data: postWithBookmark,
     });
   } catch (error) {
     res.status(500).json({
@@ -170,7 +174,10 @@ exports.getAllPosts = async (req, res) => {
     }
 
     /* Check if the post is bookmarked by the user and return isBookmarked in repsonse */
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(post, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      post,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -363,7 +370,10 @@ exports.getAllPostsByUser = async (req, res) => {
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -389,11 +399,19 @@ exports.getAllPostsByUserId = async (req, res) => {
   try {
     /* Get the count */
     const totalItems = await Post.countDocuments({
-      $and: [{ author: userId }, { report_count: { $lt: 10 } }, { is_blocked: false }],
+      $and: [
+        { author: userId },
+        { report_count: { $lt: 10 } },
+        { is_blocked: false },
+      ],
     });
 
     const posts = await Post.find({
-      $and: [{ author: userId }, { report_count: { $lt: 10 } }, { is_blocked: false }],
+      $and: [
+        { author: userId },
+        { report_count: { $lt: 10 } },
+        { is_blocked: false },
+      ],
     })
 
       .skip(skip)
@@ -409,7 +427,10 @@ exports.getAllPostsByUserId = async (req, res) => {
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -452,7 +473,10 @@ exports.getAllPostsByCommunity = async (req, res) => {
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -477,17 +501,24 @@ exports.getLatestPosts = async (req, res) => {
       createdAt: -1,
     });
 
-    const posts = await Post.find().sort({ createdAt: -1 }).skip(skip).limit(limit).populate({
-      path: "author",
-      select: "userName firstName lastName bio profilePic",
-    });
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -512,17 +543,24 @@ exports.getTrendingPosts = async (req, res) => {
       upvotes_count: -1,
     });
 
-    const posts = await Post.find().sort({ upvotes_count: -1 }).skip(skip).limit(limit).populate({
-      path: "author",
-      select: "userName firstName lastName bio profilePic",
-    });
+    const posts = await Post.find()
+      .sort({ upvotes_count: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
@@ -547,17 +585,24 @@ exports.getMostViewedPosts = async (req, res) => {
       view_count: -1,
     });
 
-    const posts = await Post.find().sort({ view_count: -1 }).skip(skip).limit(limit).populate({
-      path: "author",
-      select: "userName firstName lastName bio profilePic",
-    });
+    const posts = await Post.find()
+      .sort({ view_count: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      });
     if (!posts) {
       return res.status(404).json({
         message: "Posts not found",
       });
     }
 
-    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      posts,
+      req.user.userId
+    );
 
     return res.status(200).json({
       message: "Posts found",
