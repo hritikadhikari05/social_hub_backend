@@ -12,59 +12,38 @@ const authCheck = require("../middlewares/auth_middleware.js");
 // );
 
 /* Create Post */
-router.post(
-  "/create-post",
-  authCheck,
-  post_controller.createPost
-);
+router.post("/create-post", authCheck, post_controller.createPost);
 
 /* Get Post */
-router.get(
-  "/get-post/:postId",
-  authCheck,
-  post_controller.getPost
-);
+router.get("/get-post/:postId", authCheck, post_controller.getPost);
 
 /* Get All Posts */
-router.get(
-  "/get-all-posts",
-  authCheck,
-  post_controller.getAllPosts
-);
+router.get("/get-all-posts", authCheck, post_controller.getAllPosts);
 
 /*Get Blocked Posts */
-router.get(
-  "/get-blocked-posts",
-  authCheck,
-  post_controller.getAllBlockedPosts
-);
+router.get("/get-blocked-posts", authCheck, post_controller.getAllBlockedPosts);
 
 /* Unblock Post */
-router.post(
-  "/unblock-post/:postId",
-  authCheck,
-  post_controller.unblockPost
-);
+router.post("/unblock-post/:postId", authCheck, post_controller.unblockPost);
 
 /* Report Post */
-router.post(
-  "/report-post/:postId",
-  authCheck,
-  post_controller.reportPost
-);
+router.post("/report-post/:postId", authCheck, post_controller.reportPost);
 
 /* Unreport Post */
-router.post(
-  "/unreport-post/:postId",
-  authCheck,
-  post_controller.unreportPost
-);
+router.post("/unreport-post/:postId", authCheck, post_controller.unreportPost);
 
 /* Get All Posts By User */
 router.get(
   "/get-all-posts-by-user",
   authCheck,
   post_controller.getAllPostsByUser
+);
+
+/* Get All posts by user id */
+router.get(
+  "/get-all-posts-by-user-id/:userId",
+  authCheck,
+  post_controller.getAllPostsByUserId
 );
 
 /* Get All Posts By community */
@@ -75,18 +54,10 @@ router.get(
 );
 
 /* Get latest Post */
-router.get(
-  "/get-latest-posts",
-  authCheck,
-  post_controller.getLatestPosts
-);
+router.get("/get-latest-posts", authCheck, post_controller.getLatestPosts);
 
 /* Get Trending Post */
-router.get(
-  "/get-trending-posts",
-  authCheck,
-  post_controller.getTrendingPosts
-);
+router.get("/get-trending-posts", authCheck, post_controller.getTrendingPosts);
 
 /* Get Most Viewed Post */
 router.get(
@@ -96,31 +67,15 @@ router.get(
 );
 
 /* Upvote Post */
-router.post(
-  "/upvote-post/:postId",
-  authCheck,
-  post_controller.upvotePost
-);
+router.post("/upvote-post/:postId", authCheck, post_controller.upvotePost);
 
 /* Downvote Post */
-router.post(
-  "/downvote-post/:postId",
-  authCheck,
-  post_controller.downvotePost
-);
+router.post("/downvote-post/:postId", authCheck, post_controller.downvotePost);
 
 /* Delete Post By Id */
-router.delete(
-  "/delete-post/:postId",
-  authCheck,
-  post_controller.deletePost
-);
+router.delete("/delete-post/:postId", authCheck, post_controller.deletePost);
 
 /* Update Post By Id */
-router.put(
-  "/update-post/:postId",
-  authCheck,
-  post_controller.updatePost
-);
+router.put("/update-post/:postId", authCheck, post_controller.updatePost);
 
 module.exports = router;

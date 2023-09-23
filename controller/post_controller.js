@@ -377,6 +377,52 @@ exports.getAllPostsByUser = async (req, res) => {
   }
 };
 
+/* Get all post by user id */
+exports.getAllPostsByUserId = async (req, res) => {
+  const { userId } = req.params;
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+
+  const page = parseInt(req.query.page) || 1; //Limit the page
+
+  const skip = (page - 1) * limit; // Skip the post
+
+  try {
+    /* Get the count */
+    const totalItems = await Post.countDocuments({
+      $and: [{ author: userId }, { report_count: { $lt: 10 } }, { is_blocked: false }],
+    });
+
+    const posts = await Post.find({
+      $and: [{ author: userId }, { report_count: { $lt: 10 } }, { is_blocked: false }],
+    })
+
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      });
+
+    if (!posts) {
+      return res.status(404).json({
+        message: "Posts not found",
+      });
+    }
+
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(posts, req.user.userId);
+
+    return res.status(200).json({
+      message: "Posts found",
+      data: postWithBookmark,
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 /* Get All Posts By Community Id */
 exports.getAllPostsByCommunity = async (req, res) => {
   const { communityId } = req.body;
