@@ -1,4 +1,6 @@
+const BookmarksDto = require("../dto/bookmarks_dto");
 const Bookmark = require("../models/bookmarks_model");
+const PostService = require("../services/post_service");
 
 /* Change user field to user_id in Bookmark model */
 // exports.changeUserField = async (req, res) => {
@@ -68,15 +70,13 @@ exports.removeBookmark = async (req, res) => {
   const { userId } = req.user;
 
   try {
-    const bookmarks =
-      await Bookmark.findOneAndDelete({
-        user_id: userId,
-        post: postId,
-      });
+    const bookmarks = await Bookmark.findOneAndDelete({
+      user_id: userId,
+      post: postId,
+    });
     if (!bookmarks) {
       return res.status(400).json({
-        message:
-          "You have not bookmarked this post",
+        message: "You have not bookmarked this post",
       });
     }
     return res.status(200).json({
@@ -107,9 +107,17 @@ exports.getBookmarks = async (req, res) => {
         message: "No bookmarked posts found",
       });
     }
+
+    /* Get isBookmarked status to the post */
+
+    const bookmarksDto = await new BookmarksDto(
+      bookmarks,
+      userId
+    ).getBookmarks();
+
     return res.status(200).json({
       message: "Bookmarks found",
-      data: bookmarks,
+      data: bookmarksDto,
     });
   } catch (error) {
     console.log(error);
