@@ -108,8 +108,7 @@ exports.getBookmarks = async (req, res) => {
       });
     }
 
-    /* Get isBookmarked status to the post */
-
+    /* Get in bookmarks in specific format */
     const bookmarksDto = await new BookmarksDto(
       bookmarks,
       userId
