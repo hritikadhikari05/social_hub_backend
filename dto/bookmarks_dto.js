@@ -8,6 +8,7 @@ class BookmarksDto {
   }
   async getBookmarks() {
     return await this.post.map((post) => {
+      console.log(post.post._id);
       return {
         _id: post.post._id,
         title: post.post.title,

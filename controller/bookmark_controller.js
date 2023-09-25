@@ -101,7 +101,13 @@ exports.getBookmarks = async (req, res) => {
     })
 
       .sort({ createdAt: -1 })
-      .populate("post");
+      .populate({
+        path: "post",
+        populate: {
+          path: "author",
+          select: "userName firstName lastName bio profilePic",
+        },
+      });
     if (bookmarks.length === 0) {
       return res.status(400).json({
         message: "No bookmarked posts found",
