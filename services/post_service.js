@@ -1,4 +1,5 @@
 const BookMarks = require("../models/bookmarks_model");
+const Post = require("../models/post_model");
 
 class PostService {
   /* Return upvote status to the post */
@@ -44,6 +45,16 @@ class PostService {
       upVoteStatus: (await this.upvoteStatus(post, userId)) ? true : false,
       dowbVoteStatus: (await this.downvoteStatus(post, userId)) ? true : false,
     };
+  }
+
+  /* Get post by id */
+  async getPost(id) {
+    try {
+      const post = await Post.findById(id);
+      return post;
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 }
 

@@ -45,6 +45,16 @@ exports.addBookmark = async (req, res) => {
         message: "You have removed from bookmark",
       });
     }
+
+    /* Check if post exists */
+    const post = await PostService.getPost(postId);
+
+    if (!post) {
+      return res.status(400).json({
+        message: "Post does not exist with this id",
+      });
+    }
+
     /* If post is not bookmarked then add it 
     to bookmark 
     */
