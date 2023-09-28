@@ -61,4 +61,18 @@ router.delete(
   communityController.deleteCommunity
 );
 
+/* Get all community join requests */
+router.get(
+  "/get-join-requests/:communityId",
+  authCheck,
+  communityController.getAllCommunityJoinRequests
+);
+
+/* Accept community join request */
+router.post(
+  "/accept-join-request/:requestId",
+  authCheck,
+  communityController.approveRequestToJoinCommunity
+);
+
 module.exports = router;

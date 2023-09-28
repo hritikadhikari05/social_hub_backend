@@ -147,8 +147,8 @@ exports.joinCommunity = async (req, res) => {
     if (community.community_type === "private") {
       /* Create request to join this community to the admin */
       const request = new CommunityRequest({
-        userId,
-        communityId,
+        user: userId,
+        community: communityId,
       });
       await request.save();
 
@@ -318,4 +318,85 @@ exports.deleteCommunity = async (req, res) => {
   }
 };
 
+/* Get all community join requests */
+exports.getAllCommunityJoinRequests = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Get all the requests to join this community */
+    const requests = await CommunityRequest.find({
+      community: communityId,
+    }).populate({
+      path: "user",
+      select: "firstName lastName userName bio profilePic gender email",
+    });
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community join requests found.",
+      data: requests,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 /* Approve the request to join the community */
+exports.approveRequestToJoinCommunity = async (req, res) => {
+  const { requestId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    const request = await CommunityRequest.findById(requestId);
+    if (!request) {
+      return res.status(400).json({
+        message: "No request found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    const community = await Community.findById(request.community);
+
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Join the community */
+    community.members.push(request.user);
+    community.member_count++;
+    await community.save();
+
+    /* Delete the request */
+    await request.deleteOne();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community join request approved.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};

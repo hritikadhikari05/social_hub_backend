@@ -3,13 +3,15 @@ const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 
 const communityRequestSchema = new Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "User",
     },
-    communityId: {
+    community: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "Community",
     },
   },
   { timestamps: true }
