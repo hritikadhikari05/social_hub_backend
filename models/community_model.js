@@ -14,7 +14,7 @@ const communitySchema = new Schema(
     community_type: {
       type: String,
       required: true,
-      enum: ["private", "public"],
+      enum: ["Private", "Public"],
     },
     icon_image: {
       type: String,
