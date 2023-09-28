@@ -40,4 +40,11 @@ router.post(
   communityController.promoteToModerator
 );
 
+/* Leave Community */
+router.post(
+  "/leave-community/:communityId",
+  authCheck,
+  communityController.leaveCommunity
+);
+
 module.exports = router;

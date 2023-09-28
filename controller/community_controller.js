@@ -120,14 +120,6 @@ exports.joinCommunity = async (req, res) => {
       res.status(400).json({ message: "No Community Found" });
     }
 
-    // if (!community.members.includes(userId)) {
-    //   community.members.push(userId);
-    //   community.member_count++;
-    //   await community.save();
-    //   return res.status(200).json({
-    //     message: "Community sucessfully joined.",
-    //   });
-    // }
     /* Check if the user is already the member of this community */
     if (community.members.includes(userId)) {
       return res.status(400).json({
