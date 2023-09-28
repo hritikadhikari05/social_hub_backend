@@ -1,7 +1,4 @@
-const {
-  Schema,
-  mongoose,
-} = require("../utils/mongoose_db_schema");
+const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 
 const communitySchema = new Schema(
   {
@@ -17,6 +14,7 @@ const communitySchema = new Schema(
     community_type: {
       type: String,
       required: true,
+      enum: ["private", "public"],
     },
     icon_image: {
       type: String,
@@ -53,7 +51,4 @@ const communitySchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
-  "Community",
-  communitySchema
-);
+module.exports = mongoose.model("Community", communitySchema);
