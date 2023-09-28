@@ -446,7 +446,7 @@ exports.getAllPostsByUserId = async (req, res) => {
 
 /* Get All Posts By Community Id */
 exports.getAllPostsByCommunity = async (req, res) => {
-  const { communityId } = req.body;
+  const { communityId } = req.params;
 
   const limit = parseInt(req.query.limit) || 10; // Limit the post
   const page = parseInt(req.query.page) || 1; //Limit the page

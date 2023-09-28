@@ -48,7 +48,7 @@ router.get(
 
 /* Get All Posts By community */
 router.get(
-  "/get-all-posts-by-community",
+  "/get-all-posts-by-community/:communityId",
   authCheck,
   post_controller.getAllPostsByCommunity
 );
