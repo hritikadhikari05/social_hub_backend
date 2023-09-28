@@ -65,8 +65,15 @@ exports.create_community = async (req, res) => {
 /* Get All Community */
 exports.getAllCommunity = async (req, res) => {
   const { userId } = req.user;
+
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+
   try {
-    const communities = await Community.find();
+    const totalItems = await Community.countDocuments();
+
+    const communities = await Community.find().skip(skip).limit(limit);
 
     //Add isMember field to the community
 
@@ -76,7 +83,7 @@ exports.getAllCommunity = async (req, res) => {
         communities,
         userId
       ),
-      hits: communities.length,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -215,6 +222,39 @@ exports.promoteToModerator = async (req, res) => {
     /* If the user for the community exists then */
     return res.status(400).json({
       message: "User is already the moderator of this communtiy",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+/* Get the list of joined communities by logged in user */
+exports.getJoinedCommunities = async (req, res) => {
+  const { userId } = req.user;
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const skip = (page - 1) * limit;
+
+  try {
+    const totalItems = await Community.countDocuments({
+      members: userId,
+    });
+
+    const communities = await Community.find({
+      members: userId,
+    })
+      .skip(skip)
+      .limit(limit);
+
+    /* Return the response */
+    res.status(200).json({
+      message: "Joined Communities Found",
+      data: communities,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (err) {
     res.status(500).json({

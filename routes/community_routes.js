@@ -47,4 +47,11 @@ router.post(
   communityController.leaveCommunity
 );
 
+/* Get list of communities by logged in user */
+router.get(
+  "/get-joined-communities",
+  authCheck,
+  communityController.getJoinedCommunities
+);
+
 module.exports = router;
