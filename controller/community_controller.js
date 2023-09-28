@@ -64,11 +64,18 @@ exports.create_community = async (req, res) => {
 
 /* Get All Community */
 exports.getAllCommunity = async (req, res) => {
+  const { userId } = req.user;
   try {
     const communities = await Community.find();
+
+    //Add isMember field to the community
+
     res.status(200).json({
       message: "Communities Found",
-      data: communities,
+      data: await CommunityService.addAndCheckIsMemberField(
+        communities,
+        userId
+      ),
       hits: communities.length,
     });
   } catch (err) {

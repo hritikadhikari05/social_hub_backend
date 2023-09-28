@@ -13,7 +13,11 @@ const authCheck = require("../middlewares/auth_middleware");
 router.post("/create", authCheck, communityController.create_community);
 
 /* get all community */
-router.get("/get-all-communities", communityController.getAllCommunity);
+router.get(
+  "/get-all-communities",
+  authCheck,
+  communityController.getAllCommunity
+);
 
 /* get community by id */
 router.get(
