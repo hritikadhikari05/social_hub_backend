@@ -3,6 +3,9 @@ const User = require("../models/user_model");
 const Moderator = require("../models/moderator_model");
 const CommunityService = require("../services/community_service");
 const CommunityDto = require("../dto/community_dto");
+const { mongo, default: mongoose } = require("mongoose");
+const AdminModel = require("../models/admin_model");
+const CommunityRequest = require("../models/community_request_model");
 
 /* Add members field to the community model */
 // exports.addMembersField = async (req, res) => {
@@ -54,8 +57,15 @@ exports.create_community = async (req, res) => {
       icon_image,
       creator_id: req.user.userId,
     });
-
     const newCommunity = await community.save();
+
+    /* Add this user to as Admin of this community */
+    const admin = new AdminModel({
+      admin_id: req.user.userId,
+      community_id: newCommunity._id,
+    });
+    await admin.save();
+
     res.status(201).json(newCommunity);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -76,7 +86,6 @@ exports.getAllCommunity = async (req, res) => {
     const communities = await Community.find().skip(skip).limit(limit);
 
     //Add isMember field to the community
-
     res.status(200).json({
       message: "Communities Found",
       data: await CommunityService.addAndCheckIsMemberField(
@@ -124,7 +133,7 @@ exports.joinCommunity = async (req, res) => {
     const community = await Community.findById(communityId);
 
     if (!community) {
-      res.status(400).json({ message: "No Community Found" });
+      return res.status(400).json({ message: "No Community Found" });
     }
 
     /* Check if the user is already the member of this community */
@@ -136,9 +145,15 @@ exports.joinCommunity = async (req, res) => {
 
     /* Check if the community is private */
     if (community.community_type === "private") {
-      //Forbidden
-      return res.status(403).json({
-        message: "This community is private.",
+      /* Create request to join this community to the admin */
+      const request = new CommunityRequest({
+        userId,
+        communityId,
+      });
+      await request.save();
+
+      return res.status(201).json({
+        message: "Successfully requested to join community.",
       });
     }
 
@@ -262,3 +277,45 @@ exports.getJoinedCommunities = async (req, res) => {
     });
   }
 };
+
+/* Delete Community */
+exports.deleteCommunity = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Delete the community */
+    await community.deleteOne();
+
+    /* Delete posts associated with this community */
+    await Post.deleteMany({
+      community_id: communityId,
+    });
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community successfully deleted.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Approve the request to join the community */

@@ -54,4 +54,11 @@ router.get(
   communityController.getJoinedCommunities
 );
 
+/* Delete Community */
+router.delete(
+  "/delete-community/:communityId",
+  authCheck,
+  communityController.deleteCommunity
+);
+
 module.exports = router;
