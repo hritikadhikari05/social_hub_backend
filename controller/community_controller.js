@@ -1,6 +1,8 @@
 const Community = require("../models/community_model");
 const User = require("../models/user_model");
 const Moderator = require("../models/moderator_model");
+const CommunityService = require("../services/community_service");
+const CommunityDto = require("../dto/community_dto");
 
 /* Add members field to the community model */
 // exports.addMembersField = async (req, res) => {
@@ -34,10 +36,9 @@ exports.create_community = async (req, res) => {
     } = req.body;
 
     /* Check if the community already exists */
-    const communityExists =
-      await Community.findOne({
-        name,
-      });
+    const communityExists = await Community.findOne({
+      name,
+    });
 
     if (communityExists) {
       return res.status(400).json({
@@ -57,9 +58,7 @@ exports.create_community = async (req, res) => {
     const newCommunity = await community.save();
     res.status(201).json(newCommunity);
   } catch (err) {
-    res
-      .status(400)
-      .json({ message: err.message });
+    res.status(400).json({ message: err.message });
   }
 };
 
@@ -73,33 +72,32 @@ exports.getAllCommunity = async (req, res) => {
       hits: communities.length,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
 /* Get Community By Id */
 exports.getCommunityById = async (req, res) => {
   const { communityId } = req.params;
+  const { userId } = req.user;
 
   try {
-    const community = await Community.findById(
-      communityId
-    );
+    const community = await Community.findById(communityId);
     if (!community) {
       return res.status(400).json({
         message: "No community with this id.",
       });
     }
+    /* Check if the user is the member of this community */
+    const isMember = await CommunityService.isMember(community, userId);
+
+    /* Return the response */
     res.status(200).json({
       message: "Community Found",
-      data: community,
+      data: new CommunityDto(community, isMember),
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -109,32 +107,82 @@ exports.joinCommunity = async (req, res) => {
   const { userId } = req.user;
 
   try {
-    const community = await Community.findById(
-      communityId
-    );
+    const community = await Community.findById(communityId);
 
     if (!community) {
-      res
-        .status(400)
-        .json({ message: "No Community Found" });
+      res.status(400).json({ message: "No Community Found" });
     }
 
-    if (!community.members.includes(userId)) {
-      community.members.push(userId);
-      community.member_count++;
-      await community.save();
-      return res.status(200).json({
-        message: "Community sucessfully joined.",
+    // if (!community.members.includes(userId)) {
+    //   community.members.push(userId);
+    //   community.member_count++;
+    //   await community.save();
+    //   return res.status(200).json({
+    //     message: "Community sucessfully joined.",
+    //   });
+    // }
+    /* Check if the user is already the member of this community */
+    if (community.members.includes(userId)) {
+      return res.status(400).json({
+        message: "You are already the member of this community.",
       });
     }
 
-    return res.status(400).json({
-      message:
-        "You are already the member of this community.",
+    /* Check if the community is private */
+    if (community.community_type === "private") {
+      //Forbidden
+      return res.status(403).json({
+        message: "This community is private.",
+      });
+    }
+
+    /* Join the community */
+    community.members.push(userId);
+    community.member_count++;
+    await community.save();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community sucessfully joined.",
     });
   } catch (err) {
     res.status(500).json({
       message: err.message,
+    });
+  }
+};
+
+/* Leave Community */
+exports.leaveCommunity = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    const community = await Community.findById(communityId);
+
+    if (!community) {
+      res.status(400).json({ message: "No Community Found" });
+    }
+
+    /* Check if the user is already the member of this community */
+    if (!community.members.includes(userId)) {
+      return res.status(400).json({
+        message: "You are not the member of this community.",
+      });
+    }
+
+    /* Leave the community */
+    community.members.pull(userId);
+    community.member_count--;
+    await community.save();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community sucessfully left.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Internal Server Error",
     });
   }
 };
@@ -150,10 +198,7 @@ exports.promoteToModerator = async (req, res) => {
   try {
     /* Check if the user is already the moderator */
     const moderators = await Moderator.findOne({
-      $and: [
-        { community_id: communityId },
-        { user_id: userId },
-      ],
+      $and: [{ community_id: communityId }, { user_id: userId }],
     });
 
     /* If the user is not the moderator of this community then promote */
@@ -164,15 +209,13 @@ exports.promoteToModerator = async (req, res) => {
       });
       await moderator.save();
       return res.status(201).json({
-        message:
-          "Successfully promoted to moderator.",
+        message: "Successfully promoted to moderator.",
       });
     }
 
     /* If the user for the community exists then */
     return res.status(400).json({
-      message:
-        "User is already the moderator of this communtiy",
+      message: "User is already the moderator of this communtiy",
     });
   } catch (err) {
     res.status(500).json({
