@@ -87,6 +87,7 @@ exports.updateProfileImage = async (req, res) => {
         message: "User not found",
       });
     }
+    //
     //Split image url to get the file name
     const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
     // Check existing image and delete from the server
