@@ -53,9 +53,11 @@ exports.create_community = async (req, res) => {
       name,
       displayName,
       description,
-      community_type,
+      community_type: community_type.toLowerCase(),
       icon_image,
       creator_id: req.user.userId,
+      members: [req.user.userId],
+      member_count: 1,
     });
     const newCommunity = await community.save();
 
@@ -202,6 +204,7 @@ exports.leaveCommunity = async (req, res) => {
       message: "Community sucessfully left.",
     });
   } catch (err) {
+    console.log(err.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
