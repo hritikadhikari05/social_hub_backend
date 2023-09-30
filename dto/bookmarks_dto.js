@@ -1,7 +1,7 @@
 const Bookmark = require("../models/bookmarks_model");
 
 class BookmarksDto {
-  id;
+  _id;
   title;
   content;
   author;
@@ -24,7 +24,7 @@ class BookmarksDto {
   isBookmarked;
 
   constructor(post, user_id) {
-    this.id = post.post._id;
+    this._id = post.post._id;
     this.title = post.post.title;
 
     this.content = post.post.content;
