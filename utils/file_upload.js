@@ -54,11 +54,12 @@ const checkFileExistsInSpace = async (bucketName, key, callback) => {
     await s3.headObject(params).promise();
     return true; // File exists
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     if (error.code === "NotFound") {
       return false; // File not found
     } else {
-      throw error;
+      // throw error;
+      return false;
     }
   }
 };

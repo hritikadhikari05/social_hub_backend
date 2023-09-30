@@ -4,6 +4,7 @@ const {
 } = require("../utils/file_upload");
 
 const User = require("../models/user_model");
+const FileService = require("../services/file_service");
 
 exports.uploadFile = async (req, res) => {
   // console.log(process.env.aws_access_key_id);
@@ -78,14 +79,17 @@ exports.deleteFile = async (req, res) => {
 
 exports.updateProfileImage = async (req, res) => {
   const { userId } = req.user;
-  const imageUrl = req.body.imageUrl;
-  const bucketName = process.env.BUCKET_NAME; // Replace with your Space's name
-  // console.log(req.body);
+  const bucketName = process.env.BUCKET_NAME;
   try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
     //Split image url to get the file name
-    const fileName = imageUrl.split("/")[imageUrl.split("/").length - 1];
-    const keyToDelete = `uploads/${fileName}`;
-    //Check existing image and delete from the server
+    const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
+    // Check existing image and delete from the server
     const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
     //Delete existing image
     if (fileExists) {
@@ -98,12 +102,6 @@ exports.updateProfileImage = async (req, res) => {
       });
     }
     //Update user profile image
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
     user.profilePic = req.file.location;
     await user.save();
     //Send response to the user
