@@ -34,7 +34,11 @@ const upload = multer({
     ) {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type. Only JPEG, PNG, and PDF files are allowed."));
+      cb(
+        new Error(
+          "Invalid file type. Only JPEG, PNG, and PDF files are allowed."
+        )
+      );
     }
   },
 });
@@ -45,15 +49,17 @@ const checkFileExistsInSpace = async (bucketName, key, callback) => {
     Bucket: bucketName,
     Key: key,
   };
-
+  console.log(bucketName, key);
   try {
     await s3.headObject(params).promise();
     return true; // File exists
   } catch (error) {
+    console.log(error);
     if (error.code === "NotFound") {
       return false; // File not found
     } else {
-      throw error;
+      // throw error;
+      return false;
     }
   }
 };

@@ -1,4 +1,10 @@
-const { deleteFileFromSpace, checkFileExistsInSpace } = require("../utils/file_upload");
+const {
+  deleteFileFromSpace,
+  checkFileExistsInSpace,
+} = require("../utils/file_upload");
+
+const User = require("../models/user_model");
+const FileService = require("../services/file_service");
 
 exports.uploadFile = async (req, res) => {
   // console.log(process.env.aws_access_key_id);
@@ -67,6 +73,47 @@ exports.deleteFile = async (req, res) => {
   } else {
     res.status(400).json({
       message: `File '${keyToDelete}' does not exist in '${bucketName}'.`,
+    });
+  }
+};
+
+exports.updateProfileImage = async (req, res) => {
+  const { userId } = req.user;
+  const bucketName = process.env.BUCKET_NAME;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    //
+    //Split image url to get the file name
+    const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
+    // Check existing image and delete from the server
+    const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
+    //Delete existing image
+    if (fileExists) {
+      await deleteFileFromSpace(bucketName, keyToDelete);
+    }
+    //Upload new image
+    if (req.file === undefined) {
+      return res.status(400).json({
+        message: "Please upload a file",
+      });
+    }
+    //Update user profile image
+    user.profilePic = req.file.location;
+    await user.save();
+    //Send response to the user
+    return res.status(200).json({
+      message: "Profile image updated successfully",
+      // url: req.file.location,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Something went wrong",
     });
   }
 };

@@ -5,16 +5,28 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const { sendOtp } = require("../utils/utils");
+const { checkFileExistsInSpace } = require("../utils/file_upload");
 
 /*create token */
 const createToken = (user) => {
-  return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "365d" });
+  return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "365d",
+  });
 };
 
 /* Registration */
 exports.register = async (req, res) => {
-  const { firstName, lastName, userName, email, password, gender, confirmPassword, phoneNo, bio } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    userName,
+    email,
+    password,
+    gender,
+    confirmPassword,
+    phoneNo,
+    bio,
+  } = req.body;
   try {
     /* Check if the email exists or not */
     const userWithEmailOrUserNameOrPhone = await User.findOne({

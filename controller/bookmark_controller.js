@@ -125,10 +125,11 @@ exports.getBookmarks = async (req, res) => {
     }
 
     /* Get in bookmarks in specific format */
-    const bookmarksDto = await new BookmarksDto(
-      bookmarks,
-      userId
-    ).getBookmarks();
+    const bookmarksDto = await Promise.all(
+      bookmarks.map(async (post) => {
+        return new BookmarksDto(post, userId);
+      })
+    );
 
     return res.status(200).json({
       message: "Bookmarks found",

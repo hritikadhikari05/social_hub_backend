@@ -6,6 +6,7 @@ const CommunityDto = require("../dto/community_dto");
 const { mongo, default: mongoose } = require("mongoose");
 const AdminModel = require("../models/admin_model");
 const CommunityRequest = require("../models/community_request_model");
+const Post = require("../models/post_model");
 
 /* Add members field to the community model */
 // exports.addMembersField = async (req, res) => {
@@ -53,9 +54,11 @@ exports.create_community = async (req, res) => {
       name,
       displayName,
       description,
-      community_type,
+      community_type: community_type.toLowerCase(),
       icon_image,
       creator_id: req.user.userId,
+      members: [req.user.userId],
+      member_count: 1,
     });
     const newCommunity = await community.save();
 
@@ -202,6 +205,7 @@ exports.leaveCommunity = async (req, res) => {
       message: "Community sucessfully left.",
     });
   } catch (err) {
+    console.log(err.message);
     res.status(500).json({
       message: "Internal Server Error",
     });

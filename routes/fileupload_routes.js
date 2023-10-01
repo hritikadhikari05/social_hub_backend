@@ -3,9 +3,7 @@ const router = express.Router();
 
 const fileupload_controller = require("../controller/fileupload_controller.");
 
-const {
-  upload,
-} = require("../utils/file_upload");
+const { upload } = require("../utils/file_upload");
 const authCheck = require("../middlewares/auth_middleware");
 
 router.post(
@@ -28,6 +26,14 @@ router.delete(
   "/delete-file/:name",
   authCheck,
   fileupload_controller.deleteFile
+);
+
+/* Update profile image */
+router.put(
+  "/update-profile-image",
+  authCheck,
+  upload.single("upload"),
+  fileupload_controller.updateProfileImage
 );
 
 module.exports = { router };
