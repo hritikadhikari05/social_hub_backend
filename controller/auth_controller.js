@@ -292,3 +292,33 @@ exports.verifyOtp = async (req, res) => {
     });
   }
 };
+
+//* Update User details */
+exports.updateUserDetailsById = async (req, res) => {
+  const { firstName, lastName, bio } = req.body;
+  const { userId } = req.params;
+
+  console.log(lastName, firstName, bio, userId);
+  // console.log(lastName ? lastName : "no last name");
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    user.firstName = firstName ? firstName : user.firstName;
+    user.lastName = lastName ? lastName : user.lastName;
+    user.bio = bio ? bio : user.bio;
+    await user.save();
+
+    return res.status(200).json({
+      message: "User details updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};

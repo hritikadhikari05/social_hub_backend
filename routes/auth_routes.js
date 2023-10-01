@@ -29,4 +29,11 @@ router.delete("/delete-user", authCheck, auth_controller.deleteUser);
 /* Verify Otp */
 router.post("/verify-otp", authCheck, auth_controller.verifyOtp);
 
+/* Update userdetails by id*/
+router.put(
+  "/update-user/:userId",
+  authCheck,
+  auth_controller.updateUserDetailsById
+);
+
 module.exports = router;
