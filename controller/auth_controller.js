@@ -190,7 +190,8 @@ exports.getUserDetails = (req, res) => {
   User.findById(req.user.userId)
     .then((user) => {
       return res.status(200).json({
-        user: user,
+        message: "User found",
+        data: user,
       });
     })
     .catch((err) => {
@@ -214,7 +215,7 @@ exports.getUserDetailsById = async (req, res) => {
     }
     return res.status(200).json({
       message: "User found",
-      user: user,
+      data: user,
     });
   } catch (error) {
     return res.status(400).json({
