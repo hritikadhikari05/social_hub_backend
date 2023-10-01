@@ -72,32 +72,22 @@ exports.createPost = async (req, res) => {
   const { title, content, tags, community_id } = req.body;
   const { userId } = req.user;
 
-  // Create new post
-  const newPost = new Post({
-    title,
-    content,
-    author: userId,
-    community_id: community_id ? community_id : userId,
-    is_sticked: false,
-    tags: tags ? tags : [],
-  });
-
   // Save new post
   try {
-    await newPost
-      .save()
-      .then((post) => {
-        return res.status(200).json({
-          message: "Post created successfully",
-          post,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: err,
-        });
-      });
+    // Create new post
+    const newPost = new Post({
+      title,
+      content,
+      author: userId,
+      community_id: community_id ? community_id : userId,
+      is_sticked: false,
+      tags: tags ? tags : [],
+    });
+    await newPost.save();
+    return res.status(200).json({
+      message: "Post created successfully",
+      post,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,

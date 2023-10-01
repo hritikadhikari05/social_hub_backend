@@ -298,9 +298,6 @@ exports.updateUserDetailsById = async (req, res) => {
   const { firstName, lastName, bio } = req.body;
   const { userId } = req.params;
 
-  console.log(lastName, firstName, bio, userId);
-  // console.log(lastName ? lastName : "no last name");
-
   try {
     const user = await User.findById(userId);
     if (!user) {
