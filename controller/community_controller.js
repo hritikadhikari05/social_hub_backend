@@ -55,7 +55,7 @@ exports.create_community = async (req, res) => {
       displayName,
       description,
       community_type: community_type.toLowerCase(),
-      icon_image,
+      icon_image: icon_image ? icon_image : "",
       creator_id: req.user.userId,
       members: [req.user.userId],
       member_count: 1,

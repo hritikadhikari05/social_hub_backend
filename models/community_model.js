@@ -18,7 +18,6 @@ const communitySchema = new Schema(
     },
     icon_image: {
       type: String,
-      required: true,
     },
     creator_id: {
       type: mongoose.Types.ObjectId,

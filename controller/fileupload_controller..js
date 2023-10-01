@@ -5,6 +5,7 @@ const {
 
 const User = require("../models/user_model");
 const FileService = require("../services/file_service");
+const Community = require("../models/community_model");
 
 exports.uploadFile = async (req, res) => {
   // console.log(process.env.aws_access_key_id);
@@ -80,36 +81,65 @@ exports.deleteFile = async (req, res) => {
 exports.updateProfileImage = async (req, res) => {
   const { userId } = req.user;
   const bucketName = process.env.BUCKET_NAME;
-  const { imageLink } = req.body;
+  const { imageLink, type, communityId } = req.body; //Type must be either user or community
   try {
-    if (!imageLink) {
+    if (!imageLink || !type) {
       return res.status(404).json({
-        message: "Image link cannot be empty",
+        message: "Image link or type cannot be empty",
       });
     }
-    const user = await User.findById(userId);
-    if (!user) {
+    if (type == "user") {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+      //
+      //Split image url to get the file name
+      const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
+      // Check existing image and delete from the server
+      const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
+      //Delete existing image
+      if (fileExists) {
+        await deleteFileFromSpace(bucketName, keyToDelete);
+      }
+      // //Upload new image
+      user.profilePic = imageLink;
+      await user.save();
+      // //Send response to the user
+      return res.status(200).json({
+        message: "Profile image updated successfully",
+      });
+    } else if (type == "community") {
+      const community = await Community.findById(communityId);
+      if (!community) {
+        return res.status(404).json({
+          message: "Community not found",
+        });
+      }
+      //Split image url to get the file name
+      const keyToDelete = await FileService.splitUrlToFileName(
+        community.icon_image
+      );
+      // Check existing image and delete from the server
+      const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
+      //Delete existing image
+      if (fileExists) {
+        await deleteFileFromSpace(bucketName, keyToDelete);
+      }
+      // //Upload new image
+      community.icon_image = imageLink;
+      await community.save();
+      // //Send response to the user
+      return res.status(200).json({
+        message: "Community icon updated successfully",
+      });
+    } else {
       return res.status(404).json({
-        message: "User not found",
+        message: "Type must be either user or community",
       });
     }
-    //
-    //Split image url to get the file name
-    const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
-    // Check existing image and delete from the server
-    const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
-    console.log(fileExists);
-    //Delete existing image
-    if (fileExists) {
-      await deleteFileFromSpace(bucketName, keyToDelete);
-    }
-    // //Upload new image
-    user.profilePic = imageLink;
-    await user.save();
-    // //Send response to the user
-    return res.status(200).json({
-      message: "Profile image updated successfully",
-    });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
