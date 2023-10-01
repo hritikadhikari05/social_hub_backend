@@ -80,7 +80,13 @@ exports.deleteFile = async (req, res) => {
 exports.updateProfileImage = async (req, res) => {
   const { userId } = req.user;
   const bucketName = process.env.BUCKET_NAME;
+  const { imageLink } = req.body;
   try {
+    if (!imageLink) {
+      return res.status(404).json({
+        message: "Image link cannot be empty",
+      });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -92,23 +98,17 @@ exports.updateProfileImage = async (req, res) => {
     const keyToDelete = await FileService.splitUrlToFileName(user.profilePic);
     // Check existing image and delete from the server
     const fileExists = await checkFileExistsInSpace(bucketName, keyToDelete);
+    console.log(fileExists);
     //Delete existing image
     if (fileExists) {
       await deleteFileFromSpace(bucketName, keyToDelete);
     }
-    //Upload new image
-    if (req.file === undefined) {
-      return res.status(400).json({
-        message: "Please upload a file",
-      });
-    }
-    //Update user profile image
-    user.profilePic = req.file.location;
+    // //Upload new image
+    user.profilePic = imageLink;
     await user.save();
-    //Send response to the user
+    // //Send response to the user
     return res.status(200).json({
       message: "Profile image updated successfully",
-      // url: req.file.location,
     });
   } catch (error) {
     console.log(error.message);

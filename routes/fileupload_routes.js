@@ -32,7 +32,6 @@ router.delete(
 router.put(
   "/update-profile-image",
   authCheck,
-  upload.single("upload"),
   fileupload_controller.updateProfileImage
 );
 
