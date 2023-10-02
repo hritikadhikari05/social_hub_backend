@@ -100,10 +100,15 @@ exports.getPost = async (req, res) => {
   const { postId } = req.params;
 
   try {
-    const post = await Post.findById(postId).populate({
-      path: "author",
-      select: "userName firstName lastName bio profilePic",
-    });
+    const post = await Post.findById(postId)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
+      });
 
     if (!post) {
       return res.status(400).json({
@@ -155,8 +160,11 @@ exports.getAllPosts = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
-
     if (!post) {
       return res.status(404).json({
         message: "Posts not found",
@@ -204,6 +212,10 @@ exports.getAllBlockedPosts = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
 
     if (!post) {
@@ -352,6 +364,10 @@ exports.getAllPostsByUser = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
 
     if (!posts) {
@@ -409,6 +425,10 @@ exports.getAllPostsByUserId = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
 
     if (!posts) {
@@ -456,6 +476,10 @@ exports.getAllPostsByCommunity = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
     if (!posts) {
       return res.status(404).json({
@@ -498,6 +522,10 @@ exports.getLatestPosts = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
     if (!posts) {
       return res.status(404).json({
@@ -540,6 +568,10 @@ exports.getTrendingPosts = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
     if (!posts) {
       return res.status(404).json({
@@ -582,6 +614,10 @@ exports.getMostViewedPosts = async (req, res) => {
       .populate({
         path: "author",
         select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community_id",
+        select: "name displayName description icon_image",
       });
     if (!posts) {
       return res.status(404).json({

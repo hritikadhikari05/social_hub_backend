@@ -1,7 +1,4 @@
-const {
-  Schema,
-  mongoose,
-} = require("../utils/mongoose_db_schema");
+const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 
 const postSchema = new Schema(
   {
@@ -22,6 +19,7 @@ const postSchema = new Schema(
       type: mongoose.Types.ObjectId,
       required: true,
       // default: null,
+      ref: "Community",
     },
     is_sticked: {
       type: Boolean,
@@ -82,7 +80,4 @@ const postSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
-  "Post",
-  postSchema
-);
+module.exports = mongoose.model("Post", postSchema);
