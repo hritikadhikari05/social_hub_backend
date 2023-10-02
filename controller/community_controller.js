@@ -75,6 +75,48 @@ exports.create_community = async (req, res) => {
   }
 };
 
+exports.updateCommunityDetails = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+
+  const { displayName, description, community_type } = req.body;
+
+  try {
+    const community = await Community.findById(communityId);
+
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Update the community */
+    community.displayName = displayName ? displayName : community.displayName;
+    community.description = description ? description : community.description;
+    community.community_type = community_type
+      ? community_type
+      : community.community_type;
+    await community.save();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community details successfully updated.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
 /* Get All Community */
 exports.getAllCommunity = async (req, res) => {
   const { userId } = req.user;
