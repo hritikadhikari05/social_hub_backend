@@ -82,4 +82,11 @@ router.post(
   communityController.approveRequestToJoinCommunity
 );
 
+/* Get most followed communities */
+router.get(
+  "/get-most-followed-communities",
+  authCheck,
+  communityController.getMostFollowedCommunities
+);
+
 module.exports = router;

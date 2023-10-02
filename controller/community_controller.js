@@ -446,3 +446,30 @@ exports.approveRequestToJoinCommunity = async (req, res) => {
     });
   }
 };
+
+exports.getMostFollowedCommunities = async (req, res) => {
+  const { userId } = req.user;
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+
+  try {
+    const totalItems = await Community.countDocuments();
+    const communities = await Community.find()
+      .sort({ member_count: -1 })
+      .limit(limit)
+      .skip(skip);
+
+    /* Return the response */
+    res.status(200).json({
+      message: "Most Followed Communities Found",
+      data: await CommunityService.addAndCheckIsMemberField(
+        communities,
+        userId
+      ),
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
