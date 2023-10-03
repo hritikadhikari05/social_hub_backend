@@ -105,12 +105,17 @@ user and latest bookmarked post
 exports.getBookmarks = async (req, res) => {
   const { userId } = req.user;
 
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+
   try {
     const bookmarks = await Bookmark.find({
       user_id: userId,
     })
 
       .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
       .populate({
         path: "post",
         populate: {
