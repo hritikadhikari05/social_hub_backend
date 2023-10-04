@@ -295,7 +295,7 @@ exports.verifyOtp = async (req, res) => {
 
 //* Update User details */
 exports.updateUserDetailsById = async (req, res) => {
-  const { firstName, lastName, bio } = req.body;
+  const { firstName, lastName, bio, gender } = req.body;
   const { userId } = req.params;
 
   try {
@@ -308,6 +308,7 @@ exports.updateUserDetailsById = async (req, res) => {
     user.firstName = firstName ? firstName : user.firstName;
     user.lastName = lastName ? lastName : user.lastName;
     user.bio = bio ? bio : user.bio;
+    user.gender = gender ? gender : user.gender;
     await user.save();
 
     return res.status(200).json({
