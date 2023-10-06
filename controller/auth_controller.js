@@ -141,52 +141,46 @@ exports.login = (req, res) => {
 };
 
 /* Reset Password */
-exports.resetPassword = (req, res) => {
+exports.resetPassword = async (req, res) => {
+  const { userId } = req.user;
   //Reset Password
-  const { password, confirmPassword } = req.body;
-  //Check whether the password and confirm password are same
-  if (password === confirmPassword) {
-    bcrypt
-      .genSalt(10)
-      .then((salt) => {
-        bcrypt
-          .hash(password, salt)
-          .then((hashedPassword) => {
-            // User.findByIdAndUpdate()
-            User.findByIdAndUpdate(req.user.userId, {
-              password: hashedPassword,
-            })
-              .then((user) => {
-                return res.status(200).json({
-                  message: "Password reset successfully",
-                  token: createToken(user),
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                return res.status(400).json({
-                  message: err,
-                });
-              });
-          })
-          .catch((err) => {
-            console.log(err);
-            return res.status(400).json({
-              message: err,
-            });
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({
-          message: err,
-        });
+  const { oldPassword, newPassword } = req.body;
+
+  const salt = await bcrypt.genSalt(10);
+
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found",
       });
+    }
+    const comparePassword = await bcrypt.compare(oldPassword, user.password);
+    if (!comparePassword) {
+      return res.status(400).json({
+        message: "Old password is incorrect",
+      });
+    }
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password reset successfully",
+      token: createToken(user),
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Internal server error",
+    });
   }
 };
 
 /* Get user details */
 exports.getUserDetails = (req, res) => {
+  console.log("Get", req.user);
   User.findById(req.user.userId)
     .then((user) => {
       return res.status(200).json({
