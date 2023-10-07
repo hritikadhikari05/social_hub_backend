@@ -30,6 +30,27 @@ exports.addReportsField = async (req, res) => {
 
   const { userId } = req.user;
   try {
+    /* Change community_id field name to community */
+    try {
+      const result = await Post.updateMany(
+        {},
+        {
+          $rename: {
+            community_id: "community",
+          },
+        }
+      );
+
+      res.status(201).json({
+        message: "Community field name changed successfully",
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+
     /*------- Add multiple posts to the post schema------------*/
     // for (i = 0; i < 50; i++) {
     //   const newPost = new Post({
@@ -58,9 +79,9 @@ exports.addReportsField = async (req, res) => {
 
     // console.log(comment);
 
-    res.status(201).json({
-      message: "Comment field added successfully",
-    });
+    // res.status(201).json({
+    //   message: "Comment field added successfully",
+    // });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: error.message });
@@ -79,7 +100,7 @@ exports.createPost = async (req, res) => {
       title,
       content,
       author: userId,
-      community_id: community_id ? community_id : userId,
+      community: community_id ? community_id : userId,
       is_sticked: false,
       tags: tags ? tags : [],
     });
@@ -106,7 +127,7 @@ exports.getPost = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
 
@@ -162,7 +183,7 @@ exports.getAllPosts = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
     if (!post) {
@@ -214,7 +235,7 @@ exports.getAllBlockedPosts = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
 
@@ -366,7 +387,7 @@ exports.getAllPostsByUser = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
 
@@ -427,7 +448,7 @@ exports.getAllPostsByUserId = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
 
@@ -465,11 +486,11 @@ exports.getAllPostsByCommunity = async (req, res) => {
   try {
     /* Get the count */
     const totalItems = await Post.countDocuments({
-      community_id: communityId,
+      community: communityId,
     });
 
     const posts = await Post.find({
-      community_id: communityId,
+      community: communityId,
     })
       .skip(skip)
       .limit(limit)
@@ -478,7 +499,7 @@ exports.getAllPostsByCommunity = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
     if (!posts) {
@@ -524,7 +545,7 @@ exports.getLatestPosts = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
     if (!posts) {
@@ -570,7 +591,7 @@ exports.getTrendingPosts = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
     if (!posts) {
@@ -616,7 +637,7 @@ exports.getMostViewedPosts = async (req, res) => {
         select: "userName firstName lastName bio profilePic",
       })
       .populate({
-        path: "community_id",
+        path: "community",
         select: "name displayName description icon_image",
       });
     if (!posts) {

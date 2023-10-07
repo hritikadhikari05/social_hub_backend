@@ -15,7 +15,7 @@ const postSchema = new Schema(
       required: true,
       ref: "User",
     },
-    community_id: {
+    community: {
       type: mongoose.Types.ObjectId,
       required: true,
       // default: null,

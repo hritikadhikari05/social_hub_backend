@@ -5,11 +5,7 @@ const post_controller = require("../controller/post_controller.js");
 const authCheck = require("../middlewares/auth_middleware.js");
 
 /* Add Reports Field */
-// router.post(
-//   "/add-reports",
-//   authCheck,
-//   post_controller.addReportsField
-// );
+router.post("/add-reports", authCheck, post_controller.addReportsField);
 
 /* Create Post */
 router.post("/create-post", authCheck, post_controller.createPost);

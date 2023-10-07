@@ -349,7 +349,7 @@ exports.deleteCommunity = async (req, res) => {
 
     /* Delete posts associated with this community */
     await Post.deleteMany({
-      community_id: communityId,
+      community: communityId,
     });
 
     /* Return the response */
