@@ -128,4 +128,11 @@ router.get(
   communityController.getModeratorsByCommunity
 );
 
+/* Transfer ownership of the community */
+router.post(
+  "/transfer-ownership/:communityId",
+  authCheck,
+  communityController.transferOwnership
+);
+
 module.exports = router;

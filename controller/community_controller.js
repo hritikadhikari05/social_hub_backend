@@ -759,3 +759,59 @@ exports.getModeratorsByCommunity = async (req, res) => {
     });
   }
 };
+
+/* Transfer the ownership of the community */
+exports.transferOwnership = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+  const { newOwner } = req.body;
+
+  try {
+    //Check if the community exists
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Check if the new owner exists */
+    const user = await User.findById(newOwner);
+    if (!user) {
+      return res.status(400).json({
+        message: "No user found.",
+      });
+    }
+
+    /* Check if the user is the member of this community */
+    if (!community.members.includes(newOwner)) {
+      return res.status(400).json({
+        message: "User is not the member of this community.",
+      });
+    }
+
+    /* Transfer the ownership */
+    await AdminModel.updateOne({ community: communityId }, { user: newOwner });
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Ownership successfully transferred.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
