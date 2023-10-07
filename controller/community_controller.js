@@ -264,16 +264,24 @@ exports.promoteToModerator = async (req, res) => {
   const { userId } = req.user;
 
   try {
+    /* Check if the community exists */
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
     /* Check if the user is already the moderator */
     const moderators = await Moderator.findOne({
-      $and: [{ community_id: communityId }, { user_id: userId }],
+      $and: [{ community: communityId }, { user: userId }],
     });
 
     /* If the user is not the moderator of this community then promote */
     if (!moderators) {
       const moderator = new Moderator({
-        user_id: userId,
-        community_id: communityId,
+        user: userId,
+        community: communityId,
       });
       await moderator.save();
       return res.status(201).json({
@@ -638,6 +646,80 @@ exports.editCommunityGuidelines = async (req, res) => {
     /* Return the response */
     return res.status(200).json({
       message: "Community guidelines successfully updated.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Get joined members of the community */
+exports.getJoinedMembers = async (req, res) => {
+  const { communityId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Get all the members of this community */
+    const members = await User.find({
+      _id: {
+        $in: community.members,
+      },
+    })
+      .select("firstName lastName userName profilePic")
+      .limit(limit)
+      .skip(skip);
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community members found.",
+      data: members,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Get Moderators of the community */
+exports.getModeratorsByCommunity = async (req, res) => {
+  const { communityId } = req.params;
+
+  try {
+    const moderators = await Moderator.find({
+      community: communityId,
+    })
+      .populate({
+        path: "user",
+        select: "firstName lastName userName profilePic",
+      })
+      .populate({
+        path: "community",
+        select: "name displayName description community_type icon_image",
+      });
+
+    if (!moderators) {
+      return res.status(400).json({
+        message: "No moderators found.",
+      });
+    }
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Moderators found.",
+      data: moderators,
     });
   } catch (error) {
     console.log(error.message);

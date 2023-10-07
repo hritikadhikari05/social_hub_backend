@@ -114,4 +114,18 @@ router.put(
   communityController.editCommunityGuidelines
 );
 
+/* Get joined members of the community */
+router.get(
+  "/get-joined-members/:communityId",
+  authCheck,
+  communityController.getJoinedMembers
+);
+
+/* Get community moderators */
+router.get(
+  "/get-moderators/:communityId",
+  authCheck,
+  communityController.getModeratorsByCommunity
+);
+
 module.exports = router;

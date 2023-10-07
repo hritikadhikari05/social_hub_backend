@@ -1,22 +1,19 @@
-const {
-  Schema,
-  mongoose,
-} = require("../utils/mongoose_db_schema");
+const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 
 const moderatorSchema = new Schema(
   {
-    user_id: {
+    user: {
       type: mongoose.Types.ObjectId,
       required: true,
+      ref: "User",
     },
-    community_id: {
+    community: {
       type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Community",
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
-  "Moderator",
-  moderatorSchema
-);
+module.exports = mongoose.model("Moderator", moderatorSchema);
