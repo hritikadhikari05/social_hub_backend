@@ -1,15 +1,12 @@
-const {
-  Schema,
-  mongoose,
-} = require("../utils/mongoose_db_schema");
+const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 
 const adminModel = new Schema(
   {
-    admin_id: {
+    user: {
       type: mongoose.Types.ObjectId,
       required: true,
     },
-    community_id: {
+    community: {
       type: mongoose.Types.ObjectId,
       required: true,
     },
@@ -17,7 +14,4 @@ const adminModel = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
-  "Admin",
-  adminModel
-);
+module.exports = mongoose.model("Admin", adminModel);

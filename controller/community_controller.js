@@ -9,25 +9,27 @@ const CommunityRequest = require("../models/community_request_model");
 const Post = require("../models/post_model");
 const CommunityGuidelines = require("../models/community_guidelines_model");
 
-/* Add members field to the community model */
-// exports.addMembersField = async (req, res) => {
-//   try {
-//     const communities = await Community.find();
-//     communities.map(async (community) => {
-//       community.members = [];
-//       await community.save();
-//     });
-//     res.status(200).json({
-//       message:
-//         "Members field added to community model",
-//     });
-//   } catch (err) {
-//     res
-
-//       .status(500)
-//       .json({ message: err.message });
-//   }
-// };
+// /* Add members field to the community model */
+exports.addMembersField = async (req, res) => {
+  try {
+    //Update admin field name
+    await AdminModel.updateMany(
+      {},
+      {
+        $rename: {
+          admin_id: "user",
+          community_id: "community",
+        },
+      }
+      //  { admin_id: "user", community_id: "community" }
+    );
+    return res.status(200).json({
+      message: "Successfully updated admin field name.",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 /* Create a new community */
 exports.create_community = async (req, res) => {
@@ -65,8 +67,8 @@ exports.create_community = async (req, res) => {
 
     /* Add this user to as Admin of this community */
     const admin = new AdminModel({
-      admin_id: req.user.userId,
-      community_id: newCommunity._id,
+      user: req.user.userId,
+      community: newCommunity._id,
     });
     await admin.save();
 
@@ -92,7 +94,11 @@ exports.updateCommunityDetails = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -347,7 +353,11 @@ exports.deleteCommunity = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -387,7 +397,12 @@ exports.getAllCommunityJoinRequests = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -430,7 +445,11 @@ exports.approveRequestToJoinCommunity = async (req, res) => {
     /* Check if the user is the creator of this community */
     const community = await Community.findById(request.community);
 
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: community._id }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -515,7 +534,11 @@ exports.addCommunityGuidelines = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -586,7 +609,11 @@ exports.deleteCommunityGuidelines = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
@@ -631,7 +658,11 @@ exports.editCommunityGuidelines = async (req, res) => {
     }
 
     /* Check if the user is the creator of this community */
-    if (community.creator_id.toString() !== userId) {
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
       return res.status(403).json({
         message: "You are not the creator of this community.",
       });
