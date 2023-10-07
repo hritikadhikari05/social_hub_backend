@@ -6,8 +6,7 @@ const Post = require("../models/post_model");
 /* Create Comment */
 exports.createComment = async (req, res) => {
   try {
-    const { content, parent_type, comment_id } =
-      req.body;
+    const { content, parent_type, comment_id } = req.body;
     const { userId } = req.user;
     const { post_id } = req.params;
     let comment_context = "";
@@ -18,13 +17,10 @@ exports.createComment = async (req, res) => {
       parent_id = post_id;
     } else if (parent_type == "COMMENT") {
       /* Find comment by id and increase the reply count */
-      const comment = await Comment.findById(
-        comment_id
-      );
+      const comment = await Comment.findById(comment_id);
       if (!comment) {
         return res.status(404).json({
-          message:
-            "No comment found with this id",
+          message: "No comment found with this id",
         });
       }
       comment.replies_count++;
@@ -43,10 +39,9 @@ exports.createComment = async (req, res) => {
     const moderator = await Moderator.findOne({
       user_id: userId,
     });
-    const personalWall =
-      await PersonalWall.findOne({
-        user_id: userId,
-      });
+    const personalWall = await PersonalWall.findOne({
+      user_id: userId,
+    });
 
     //Set the value of comment_context by checking if the user is admin
     //moderator or normal user
@@ -81,9 +76,7 @@ exports.createComment = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res
-      .status(500)
-      .json({ message: "Something Went Wrong." });
+    res.status(500).json({ message: "Something Went Wrong." });
   }
 };
 
@@ -140,14 +133,10 @@ exports.upvoteComment = async (req, res) => {
     const { comment_id } = req.params;
     const { userId } = req.user;
 
-    const comment = await Comment.findById(
-      comment_id
-    );
+    const comment = await Comment.findById(comment_id);
 
     if (!comment) {
-      return res
-        .status(404)
-        .json({ message: "No comment found" });
+      return res.status(404).json({ message: "No comment found" });
     }
 
     /* Check if the user has downvoted or not */
@@ -162,8 +151,7 @@ exports.upvoteComment = async (req, res) => {
       comment.upvotes_count--;
       comment.save();
       return res.status(200).json({
-        message:
-          "You have taken back your upvote",
+        message: "You have taken back your upvote",
       });
     }
 
@@ -190,14 +178,10 @@ exports.downvoteComment = async (req, res) => {
     const { userId } = req.user;
 
     /* Get commet by comment Id */
-    const comment = await Comment.findById(
-      comment_id
-    );
+    const comment = await Comment.findById(comment_id);
 
     if (!comment) {
-      return res
-        .status(404)
-        .json({ message: "No comment found" });
+      return res.status(404).json({ message: "No comment found" });
     }
 
     /* Check if the user has upvoted or not */
@@ -212,8 +196,7 @@ exports.downvoteComment = async (req, res) => {
       comment.downvotes_count--;
       comment.save();
       return res.status(200).json({
-        message:
-          "You have taken back your downvote",
+        message: "You have taken back your downvote",
       });
     }
 
@@ -239,11 +222,10 @@ exports.deleteComment = async (req, res) => {
     const { userId } = req.user;
 
     //Delete the comment
-    const comment =
-      await Comment.findOneAndDelete({
-        _id: comment_id,
-        author_id: userId,
-      });
+    const comment = await Comment.findOneAndDelete({
+      _id: comment_id,
+      author_id: userId,
+    });
     if (!comment) {
       res.status(400).json({
         message: "No Comment Found",

@@ -86,4 +86,32 @@ router.get(
   communityController.getMostFollowedCommunities
 );
 
+/* Add community guidelines */
+router.post(
+  "/add-community-guidelines/:communityId",
+  authCheck,
+  communityController.addCommunityGuidelines
+);
+
+/* Get community guidelines */
+router.get(
+  "/get-community-guidelines/:communityId",
+  authCheck,
+  communityController.getCommunityGuidelines
+);
+
+/* Delete community guidelines */
+router.delete(
+  "/delete-community-guidelines/:communityId",
+  authCheck,
+  communityController.deleteCommunityGuidelines
+);
+
+/* Edit community guidelines */
+router.put(
+  "/edit-community-guidelines/:communityId",
+  authCheck,
+  communityController.editCommunityGuidelines
+);
+
 module.exports = router;

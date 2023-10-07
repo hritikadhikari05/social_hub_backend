@@ -7,6 +7,7 @@ const { mongo, default: mongoose } = require("mongoose");
 const AdminModel = require("../models/admin_model");
 const CommunityRequest = require("../models/community_request_model");
 const Post = require("../models/post_model");
+const CommunityGuidelines = require("../models/community_guidelines_model");
 
 /* Add members field to the community model */
 // exports.addMembersField = async (req, res) => {
@@ -471,5 +472,177 @@ exports.getMostFollowedCommunities = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+/* Add Community guidelines */
+exports.addCommunityGuidelines = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+  const { community_guidelines } = req.body;
+
+  try {
+    if (!community_guidelines) {
+      return res.status(400).json({
+        message: "Community guidelines cannot be empty.",
+      });
+    }
+    //Check if the guidelines for the community already exists
+    const communityGuidelines = await CommunityGuidelines.findOne({
+      community: communityId,
+    });
+
+    if (communityGuidelines) {
+      return res.status(400).json({
+        message: "Community guidelines for this community already exists.",
+      });
+    }
+
+    //Check if the community exists
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Add the community guidelines to community guidelines model */
+    const guidelines = new CommunityGuidelines({
+      community: communityId,
+      community_guidelines,
+    });
+    await guidelines.save();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community guidelines successfully added.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Get Community Guidelines */
+exports.getCommunityGuidelines = async (req, res) => {
+  const { communityId } = req.params;
+
+  try {
+    const guidelines = await CommunityGuidelines.findOne({
+      community: communityId,
+    }).populate({
+      path: "community",
+      select: "name displayName description community_type icon_image",
+    });
+
+    if (!guidelines) {
+      return res.status(400).json({
+        message: "No community guidelines found.",
+      });
+    }
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community guidelines found.",
+      data: guidelines,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Delete Community Guidelines */
+exports.deleteCommunityGuidelines = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+
+  try {
+    //Check if the community exists
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Delete the community guidelines */
+    await CommunityGuidelines.deleteOne({
+      community: communityId,
+    });
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community guidelines successfully deleted.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/* Edit Community Guidelines */
+exports.editCommunityGuidelines = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+  const { community_guidelines } = req.body;
+
+  try {
+    if (!community_guidelines) {
+      return res.status(400).json({
+        message: "Community guidelines cannot be empty.",
+      });
+    }
+
+    //Check if the community exists
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    if (community.creator_id.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Edit the community guidelines */
+    await CommunityGuidelines.updateOne(
+      { community: communityId },
+      { community_guidelines }
+    );
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Community guidelines successfully updated.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
