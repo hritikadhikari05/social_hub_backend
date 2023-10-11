@@ -3,7 +3,6 @@ const User = require("../models/user_model");
 const Moderator = require("../models/moderator_model");
 const CommunityService = require("../services/community_service");
 const CommunityDto = require("../dto/community_dto");
-const { mongo, default: mongoose } = require("mongoose");
 const AdminModel = require("../models/admin_model");
 const CommunityRequest = require("../models/community_request_model");
 const Post = require("../models/post_model");

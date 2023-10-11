@@ -1,7 +1,4 @@
-const {
-  Schema,
-  mongoose,
-} = require("../utils/mongoose_db_schema");
+const { Schema, mongoose } = require("../utils/mongoose_db_schema");
 const Post = require("./post_model");
 
 const userSchema = new Schema(
@@ -64,6 +61,26 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    followers_count: {
+      type: Number,
+      default: 0,
+    },
+    following_count: {
+      type: Number,
+      default: 0,
+    },
     otp: {
       type: String,
       default: "",
@@ -72,7 +89,4 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
-  "User",
-  userSchema
-);
+module.exports = mongoose.model("User", userSchema);

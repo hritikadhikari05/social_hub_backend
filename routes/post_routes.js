@@ -62,6 +62,13 @@ router.get(
   post_controller.getMostViewedPosts
 );
 
+/* Get Posts by user following */
+  // router.get(
+  //   "/get-posts-by-user-following",
+  //   authCheck,
+  //   post_controller.getPostsByUserFollowing
+  // );
+
 /* Upvote Post */
 router.post("/upvote-post/:postId", authCheck, post_controller.upvotePost);
 

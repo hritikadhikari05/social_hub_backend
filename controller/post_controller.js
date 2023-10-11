@@ -30,20 +30,22 @@ exports.addReportsField = async (req, res) => {
 
   const { userId } = req.user;
   try {
-    /* Change community_id field name to community */
+    /* add followers, following, followers_count, following_count field to the User  database*/
     try {
-      const result = await Post.updateMany(
-        {},
-        {
-          $rename: {
-            community_id: "community",
-          },
-        }
-      );
-
-      res.status(201).json({
-        message: "Community field name changed successfully",
-      });
+      // const user = await User.updateMany(
+      //   {},
+      //   {
+      //     $set: {
+      //       followers: [],
+      //       following: [],
+      //       followers_count: 0,
+      //       following_count: 0,
+      //     },
+      //   }
+      // );
+      // res.status(201).json({
+      //   message: "Fields added successfully",
+      // });
     } catch (err) {
       console.error(err);
       res.status(500).json({
@@ -831,3 +833,5 @@ exports.updatePost = async (req, res) => {
     });
   }
 };
+
+/* Get Posts by user following */
