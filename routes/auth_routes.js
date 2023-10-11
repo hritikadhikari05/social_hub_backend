@@ -36,4 +36,25 @@ router.put(
   auth_controller.updateUserDetailsById
 );
 
+/* Follow a user */
+router.post(
+  "/follow-user/:userToFollowId",
+  authCheck,
+  auth_controller.followUser
+);
+
+/* Unfollow User */
+router.post(
+  "/unfollow-user/:userIdToUnfollow",
+  authCheck,
+  auth_controller.unfollowUser
+);
+
+/* Get following status */
+router.get(
+  "/get-following-status/:userIdToCheck",
+  authCheck,
+  auth_controller.getFollowingStatus
+);
+
 module.exports = router;

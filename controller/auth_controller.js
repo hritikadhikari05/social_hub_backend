@@ -314,3 +314,156 @@ exports.updateUserDetailsById = async (req, res) => {
     });
   }
 };
+
+/* Follow user */
+exports.followUser = async (req, res) => {
+  const { userId } = req.user;
+  const { userToFollowId } = req.params;
+
+  console.log(userToFollowId);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const userToFollow = await User.findById(userToFollowId);
+    if (!userToFollow) {
+      return res.status(404).json({
+        message: "User to follow not found",
+      });
+    }
+
+    /* Check if user is already following the user */
+    const isAlreadyFollowing = user.following.includes(userToFollowId);
+
+    if (isAlreadyFollowing) {
+      user.following.pull(userToFollowId); //Remove the userid from following
+      userToFollow.followers.pull(userId); // Remove the userIdToFollow from followers
+      user.following_count--; //Decrease the following count
+      userToFollow.followers_count--; // Decrease the followers count
+      await user.save();
+      await userToFollow.save();
+
+      return res.status(200).json({
+        message: "You have taken back your following request",
+      });
+    }
+
+    /* Add user to following list */
+    user.following.push(userToFollowId);
+
+    /* Add user to followers list */
+    userToFollow.followers.push(userId);
+
+    /* Increase the following count */
+    user.following_count++;
+
+    /* Increase the follower count */
+    userToFollow.followers_count++;
+
+    await user.save();
+    await userToFollow.save();
+
+    return res.status(200).json({
+      message: "User followed successfully",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+/* Unfollow user */
+exports.unfollowUser = async (req, res) => {
+  const { userId } = req.user;
+  const { userIdToUnfollow } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User Not found",
+      });
+    }
+
+    const userToUnfollow = await User.findById(userIdToUnfollow);
+
+    if (!userToUnfollow) {
+      return res.status.json({
+        message: "No user found with this user id.",
+      });
+    }
+
+    /* Check if the userId is in the followers list or not.
+    if YES then remove from the list
+    else return response "Not following this user"
+    */
+    if (!userToUnfollow.followers.includes(userId)) {
+      return res.status(400).json({
+        message: "You are not following this user",
+      });
+    }
+
+    userToUnfollow.followers.pull(userId);
+    userToUnfollow.followers_count--;
+    user.following.pull(userIdToUnfollow);
+    user.following_count--;
+    await userToUnfollow.save();
+    await user.save();
+
+    return res.status(200).json({
+      message: "You have successfully unfollowed the user",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Errro",
+    });
+  }
+};
+
+/* Get following status */
+exports.getFollowingStatus = async (req, res) => {
+  const { userId } = req.user;
+
+  const { userIdToCheck } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No user found",
+      });
+    }
+
+    const userToCheck = await User.findById(userIdToCheck);
+    if (!userIdToCheck) {
+      return res.status(404).json({
+        message: "No user found",
+      });
+    }
+
+    if (user.following.includes(userIdToCheck)) {
+      return res.status(200).json({
+        message: "User is following this user",
+        following: true,
+      });
+    }
+
+    return res.status(400).json({
+      message: "User is not following this user",
+      following: false,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
