@@ -700,6 +700,12 @@ exports.getJoinedMembers = async (req, res) => {
       });
     }
 
+    const totalItems = await User.countDocuments({
+      _id: {
+        $in: community.members,
+      },
+    });
+
     /* Get all the members of this community */
     const members = await User.find({
       _id: {
@@ -709,7 +715,6 @@ exports.getJoinedMembers = async (req, res) => {
       .select("firstName lastName userName profilePic")
       .limit(limit)
       .skip(skip);
-    console.log(members);
 
     /* Check if the user is following this user or not */
     const membersWithIsFollowingField =
@@ -722,6 +727,7 @@ exports.getJoinedMembers = async (req, res) => {
     return res.status(200).json({
       message: "Community members found.",
       data: membersWithIsFollowingField,
+      totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
     console.log(error.message);
