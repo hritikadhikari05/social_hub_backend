@@ -718,8 +718,6 @@ exports.getJoinedMembers = async (req, res) => {
         req.user.userId
       );
 
-    console.log(membersWithIsFollowingField);
-
     /* Return the response */
     return res.status(200).json({
       message: "Community members found.",
