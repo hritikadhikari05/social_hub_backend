@@ -754,10 +754,15 @@ exports.getModeratorsByCommunity = async (req, res) => {
       });
     }
 
+    const moderatorsWithIsFollowingField =
+      await CommunityService.addAndCheckIsFollowingFieldForModerators(
+        moderators,
+        req.user.userId
+      );
     /* Return the response */
     return res.status(200).json({
       message: "Moderators found.",
-      data: moderators,
+      data: moderatorsWithIsFollowingField,
     });
   } catch (error) {
     console.log(error.message);

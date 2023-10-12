@@ -34,6 +34,28 @@ class CommunityService {
       })
     );
   }
+
+  /* Check if the user is following this user or not for moderators */
+  async addAndCheckIsFollowingFieldForModerators(moderators, userId) {
+    return await Promise.all(
+      moderators.map(async (moderator) => {
+        const user = await User.findById(moderator.user._id);
+        if (!user) {
+          return res.status(400).json({
+            message: "No User found",
+          });
+        }
+
+        const isFollowing = user.followers.includes(userId);
+
+        return {
+          _id: moderator._id,
+          user: { ...moderator.user._doc, isFollowing },
+          community: { ...moderator.community._doc },
+        };
+      })
+    );
+  }
 }
 
 module.exports = new CommunityService();
