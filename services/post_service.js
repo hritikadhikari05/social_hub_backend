@@ -52,9 +52,7 @@ class PostService {
     try {
       const post = await Post.findById(id);
       return post;
-    } catch (error) {
-      console.log(error.message);
-    }
+    } catch (error) {}
   }
 }
 

@@ -19,7 +19,7 @@ const PostService = require("../services/post_service");
 //       message: "User field changed to user_id",
 //     });
 //   } catch (error) {
-//     console.log(error.message);
+//
 //     res.status(500).json({
 //       message: "Something went wrong",
 //     });
@@ -67,7 +67,6 @@ exports.addBookmark = async (req, res) => {
       message: "Post bookmarked successfully",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
@@ -141,7 +140,6 @@ exports.getBookmarks = async (req, res) => {
       data: bookmarksDto,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       message: "Something went wrong",
     });

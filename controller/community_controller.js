@@ -116,7 +116,6 @@ exports.updateCommunityDetails = async (req, res) => {
       message: "Community details successfully updated.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -375,7 +374,6 @@ exports.deleteCommunity = async (req, res) => {
       message: "Community successfully deleted.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -421,7 +419,6 @@ exports.getAllCommunityJoinRequests = async (req, res) => {
       data: requests,
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -467,7 +464,6 @@ exports.approveRequestToJoinCommunity = async (req, res) => {
       message: "Community join request approved.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -555,7 +551,6 @@ exports.addCommunityGuidelines = async (req, res) => {
       message: "Community guidelines successfully added.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -586,7 +581,6 @@ exports.getCommunityGuidelines = async (req, res) => {
       data: guidelines,
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -628,7 +622,6 @@ exports.deleteCommunityGuidelines = async (req, res) => {
       message: "Community guidelines successfully deleted.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -678,7 +671,6 @@ exports.editCommunityGuidelines = async (req, res) => {
       message: "Community guidelines successfully updated.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -730,7 +722,6 @@ exports.getJoinedMembers = async (req, res) => {
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -771,7 +762,6 @@ exports.getModeratorsByCommunity = async (req, res) => {
       data: moderatorsWithIsFollowingField,
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -827,7 +817,6 @@ exports.transferOwnership = async (req, res) => {
       message: "Ownership successfully transferred.",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });

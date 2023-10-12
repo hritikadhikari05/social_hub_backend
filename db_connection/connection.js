@@ -4,8 +4,7 @@ dotenv.config({ path: "./.env" });
 
 const dbConnect = async () => {
   // Connect to the database
-  const dbConnectionString =
-    process.env.DATABASE_URL;
+  const dbConnectionString = process.env.DATABASE_URL;
 
   // REMOTE DATABASE
   await mongoose
@@ -13,9 +12,7 @@ const dbConnect = async () => {
       useNewUrlParser: true,
     })
     .then(() => {
-      console.log(
-        "Successfully connected to database"
-      );
+      console.log("Successfully connected to database");
     });
 };
 

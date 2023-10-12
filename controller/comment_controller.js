@@ -75,7 +75,6 @@ exports.createComment = async (req, res) => {
       data: newComment,
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ message: "Something Went Wrong." });
   }
 };

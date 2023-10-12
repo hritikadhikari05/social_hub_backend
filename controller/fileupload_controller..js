@@ -21,7 +21,7 @@ exports.uploadFile = async (req, res) => {
       fileInfo: req.file,
     });
   } catch (error) {
-    // console.log(error.message);
+    //
     res.status(500).json({
       message: "Something went wrong",
       error: error,
@@ -141,7 +141,6 @@ exports.updateProfileImage = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });

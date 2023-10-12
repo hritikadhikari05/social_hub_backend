@@ -22,7 +22,7 @@ exports.addReportsField = async (req, res) => {
   //     message: "User updated successfully added",
   //   });
   // } catch (error) {
-  //   console.log(error.message);
+  //
   //   res
   //     .status(500)
   //     .json({ message: error.message });
@@ -85,7 +85,6 @@ exports.addReportsField = async (req, res) => {
     //   message: "Comment field added successfully",
     // });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -709,7 +708,6 @@ exports.upvotePost = async (req, res) => {
     const upvotePost = await Post.findById(postId);
 
     if (!upvotePost) {
-      console.log("hello");
       return res.status(404).json({
         message: "No post found",
       });
@@ -741,7 +739,6 @@ exports.upvotePost = async (req, res) => {
       message: "Sucessfully upvoted",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
@@ -787,7 +784,6 @@ exports.downvotePost = async (req, res) => {
       message: "Sucessfully downvoted",
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });
@@ -822,7 +818,6 @@ exports.updatePost = async (req, res) => {
         });
       })
       .catch((err) => {
-        console.log(err);
         return res.status(400).json({
           message: "No post found",
         });

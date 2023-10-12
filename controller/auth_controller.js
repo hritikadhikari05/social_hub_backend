@@ -96,7 +96,6 @@ exports.register = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log(error.message);
     return res.status(400).json({
       message: "Something went wrong",
     });
@@ -180,7 +179,6 @@ exports.resetPassword = async (req, res) => {
 
 /* Get user details */
 exports.getUserDetails = (req, res) => {
-  console.log("Get", req.user);
   User.findById(req.user.userId)
     .then((user) => {
       return res.status(200).json({
@@ -189,7 +187,6 @@ exports.getUserDetails = (req, res) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(400).json({
         message: err,
       });
@@ -221,13 +218,11 @@ exports.getUserDetailsById = async (req, res) => {
 /* Delete logged in User */
 exports.deleteUser = async (req, res) => {
   const { userId } = req.user;
-  console.log(userId);
   try {
     const user = await User.findOne({
       _id: userId,
     });
 
-    console.log(user);
     if (!user) {
       return res.status(400).json({
         message: "User not found.",
@@ -320,8 +315,6 @@ exports.followUser = async (req, res) => {
   const { userId } = req.user;
   const { userToFollowId } = req.params;
 
-  console.log(userToFollowId);
-
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -372,7 +365,6 @@ exports.followUser = async (req, res) => {
       message: "User followed successfully",
     });
   } catch (error) {
-    console.log(error.message);
     return res.status(500).json({
       message: "Internal server error",
     });
