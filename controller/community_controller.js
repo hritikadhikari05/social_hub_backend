@@ -709,11 +709,21 @@ exports.getJoinedMembers = async (req, res) => {
       .select("firstName lastName userName profilePic")
       .limit(limit)
       .skip(skip);
+    console.log(members);
+
+    /* Check if the user is following this user or not */
+    const membersWithIsFollowingField =
+      await CommunityService.addAndCheckIsFollowingField(
+        members,
+        req.user.userId
+      );
+
+    console.log(membersWithIsFollowingField);
 
     /* Return the response */
     return res.status(200).json({
       message: "Community members found.",
-      data: members,
+      data: membersWithIsFollowingField,
     });
   } catch (error) {
     console.log(error.message);
