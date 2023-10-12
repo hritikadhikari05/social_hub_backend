@@ -265,7 +265,7 @@ role for the specific Community
 */
 exports.promoteToModerator = async (req, res) => {
   const { communityId } = req.params;
-  const { userId } = req.user;
+  const { userId } = req.body;
 
   try {
     /* Check if the community exists */
@@ -762,6 +762,7 @@ exports.getModeratorsByCommunity = async (req, res) => {
       data: moderatorsWithIsFollowingField,
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
