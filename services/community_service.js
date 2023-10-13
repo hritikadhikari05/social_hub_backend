@@ -51,8 +51,9 @@ class CommunityService {
         const isFollowing = user.followers.includes(userId);
 
         return {
-          _id: moderator._id,
-          user: { ...moderator.user._doc, isFollowing },
+          moderatorId: moderator._id,
+          ...moderator.user._doc,
+          isFollowing,
           community: moderator.community,
         };
       })
