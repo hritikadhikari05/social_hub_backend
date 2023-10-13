@@ -715,13 +715,21 @@ exports.getJoinedMembers = async (req, res) => {
         req.user.userId
       );
 
+    /* Check if the user is moderator of this community or not */
+    const membersWithIsModeratorField =
+      await CommunityService.addAndCheckIsModeratorField(
+        membersWithIsFollowingField,
+        communityId
+      );
+
     /* Return the response */
     return res.status(200).json({
       message: "Community members found.",
-      data: membersWithIsFollowingField,
+      data: membersWithIsModeratorField,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });

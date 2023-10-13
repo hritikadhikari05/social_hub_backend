@@ -1,5 +1,6 @@
 const CommunityDto = require("../dto/community_dto");
 const User = require("../models/user_model");
+const Moderator = require("../models/moderator_model");
 
 class CommunityService {
   /* Check if the user id the member of this community */
@@ -28,7 +29,7 @@ class CommunityService {
           });
         }
 
-        const isFollowing = await user.followers.includes(userId);
+        const isFollowing = user.followers.includes(userId);
 
         return { ...member._doc, isFollowing };
       })
@@ -53,6 +54,21 @@ class CommunityService {
           user: { ...moderator.user._doc, isFollowing },
           community: { ...moderator.community._doc },
         };
+      })
+    );
+  }
+
+  /* Check if the user is following this user or not for moderators */
+  async addAndCheckIsModeratorField(members, communityId) {
+    return await Promise.all(
+      members.map(async (member) => {
+        const isModerator = await Moderator.findOne({
+          user: member._id,
+          community: communityId,
+        });
+        console.log("Is Moderator", member);
+
+        return { ...member, isModerator: isModerator ? true : false };
       })
     );
   }
