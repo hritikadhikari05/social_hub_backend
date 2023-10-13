@@ -715,9 +715,9 @@ exports.getJoinedMembers = async (req, res) => {
         req.user.userId
       );
 
-    /* Check if the user is moderator of this community or not */
-    const membersWithIsModeratorField =
-      await CommunityService.addAndCheckIsModeratorField(
+    /* Check if the user is moderator or admin of this community or not */
+    const membersWithIsModeratorAndAdminField =
+      await CommunityService.addAndCheckIsModeratorAndAdminField(
         membersWithIsFollowingField,
         communityId
       );
@@ -725,7 +725,7 @@ exports.getJoinedMembers = async (req, res) => {
     /* Return the response */
     return res.status(200).json({
       message: "Community members found.",
-      data: membersWithIsModeratorField,
+      data: membersWithIsModeratorAndAdminField,
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {

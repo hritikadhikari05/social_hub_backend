@@ -1,6 +1,7 @@
 const CommunityDto = require("../dto/community_dto");
 const User = require("../models/user_model");
 const Moderator = require("../models/moderator_model");
+const AdminModel = require("../models/admin_model");
 
 class CommunityService {
   /* Check if the user id the member of this community */
@@ -59,16 +60,27 @@ class CommunityService {
   }
 
   /* Check if the user is following this user or not for moderators */
-  async addAndCheckIsModeratorField(members, communityId) {
+  async addAndCheckIsModeratorAndAdminField(members, communityId) {
     return await Promise.all(
       members.map(async (member) => {
         const isModerator = await Moderator.findOne({
           user: member._id,
           community: communityId,
         });
-        console.log("Is Moderator", member);
 
-        return { ...member, isModerator: isModerator ? true : false };
+        //Check if the user is admin
+        const isAdmin = await AdminModel.findOne({
+          user: member._id,
+          community: communityId,
+        });
+
+        // console.log("Is Moderator", isAdmin);
+
+        return {
+          ...member,
+          isModerator: isModerator ? true : false,
+          isAdmin: isAdmin ? true : false,
+        };
       })
     );
   }
