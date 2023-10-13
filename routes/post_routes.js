@@ -63,11 +63,11 @@ router.get(
 );
 
 /* Get Posts by user following */
-  // router.get(
-  //   "/get-posts-by-user-following",
-  //   authCheck,
-  //   post_controller.getPostsByUserFollowing
-  // );
+router.get(
+  "/get-posts-by-user-following",
+  authCheck,
+  post_controller.getPostsByFollowing
+);
 
 /* Upvote Post */
 router.post("/upvote-post/:postId", authCheck, post_controller.upvotePost);
