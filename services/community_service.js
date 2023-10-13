@@ -53,7 +53,7 @@ class CommunityService {
         return {
           _id: moderator._id,
           user: { ...moderator.user._doc, isFollowing },
-          community: { ...moderator.community._doc },
+          community: moderator.community,
         };
       })
     );

@@ -743,15 +743,10 @@ exports.getModeratorsByCommunity = async (req, res) => {
   try {
     const moderators = await Moderator.find({
       community: communityId,
-    })
-      .populate({
-        path: "user",
-        select: "firstName lastName userName profilePic",
-      })
-      .populate({
-        path: "community",
-        select: "name displayName description community_type icon_image",
-      });
+    }).populate({
+      path: "user",
+      select: "firstName lastName userName profilePic",
+    });
 
     if (!moderators) {
       return res.status(400).json({
