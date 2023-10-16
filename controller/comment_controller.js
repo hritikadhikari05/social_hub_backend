@@ -3,6 +3,7 @@ const Moderator = require("../models/moderator_model");
 const PersonalWall = require("../models/personalWall_model");
 const Comment = require("../models/comment_model");
 const Post = require("../models/post_model");
+const CommentDto = require("../dto/comment_dto");
 /* Create Comment */
 exports.createComment = async (req, res) => {
   try {
@@ -55,7 +56,7 @@ exports.createComment = async (req, res) => {
       comment_context = "USER";
     }
     //Create a new comment
-    const newComment = await Comment({
+    const newComment = new Comment({
       content,
       author_id: userId,
       post_id,
@@ -63,7 +64,13 @@ exports.createComment = async (req, res) => {
       parent_type,
       parent_id,
     });
-    newComment.save();
+    const postedComment = await newComment.save();
+
+    //Find comment by id
+    const comment = await Comment.findById(postedComment._id).populate(
+      "author_id"
+    );
+    // console.log(comment);
 
     /*Increase the comment count of the post*/
     const post = await Post.findById(post_id);
@@ -72,9 +79,10 @@ exports.createComment = async (req, res) => {
 
     res.status(200).json({
       message: "Comment Created Successfully",
-      data: newComment,
+      data: new CommentDto(comment),
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: "Something Went Wrong." });
   }
 };
@@ -83,12 +91,21 @@ exports.createComment = async (req, res) => {
 exports.getComments = async (req, res) => {
   try {
     const { post_id } = req.params;
+    const limit = parseInt(req.query.limit) || 10; // Limit the post
+
+    const page = parseInt(req.query.page) || 1; //Limit the page
+
+    const skip = (page - 1) * limit; // Skip the post
 
     //Get all the comments for a particular post
     const comments = await Comment.find({
       post_id,
       parent_type: "POST",
-    });
+    })
+      .skip(skip)
+      .limit(limit)
+      .populate("author_id");
+
     if (!comments) {
       res.status(400).json({
         message: "No Comments Found",
@@ -96,7 +113,8 @@ exports.getComments = async (req, res) => {
     }
     res.status(200).json({
       message: "Comments Fetched Successfully",
-      data: comments,
+      data: comments.map((comment) => new CommentDto(comment)),
+      // data: comments,
     });
   } catch (error) {
     res.status(500).json("Something Went Wrong.");
