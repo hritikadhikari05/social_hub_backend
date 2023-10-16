@@ -105,37 +105,36 @@ exports.register = async (req, res) => {
 /* -----------------------------------------------Login------------------------------------------- 
 -----------------------------------------------------------------------------------------------
 */
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const { password, email } = req.body;
 
   try {
-    // Find user by email or username
-    User.findOne({
-      $or: [{ userName: email }, { email: email }],
-    }).then((user) => {
-      // Check if user exists
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
+    const user = await User.findOne({
+      $or: [{ userName: email }, { email: email }, { phoneNo: email }],
+    });
 
-      // Check if password matches
-      bcrypt.compare(password, user.password).then((isMatch) => {
-        if (isMatch) {
-          return res.status(200).json({
-            message: "User logged in successfully",
-            token: createToken(user),
-          });
-        } else {
-          return res.status(400).json({
-            message: "Incorrect password",
-          });
-        }
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found",
       });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Incorrect password",
+      });
+    }
+
+    return res.status(200).json({
+      message: "User logged in successfully",
+      token: createToken(user),
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
