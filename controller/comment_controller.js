@@ -70,7 +70,6 @@ exports.createComment = async (req, res) => {
     const comment = await Comment.findById(postedComment._id).populate(
       "author_id"
     );
-    // console.log(comment);
 
     /*Increase the comment count of the post*/
     const post = await Post.findById(post_id);
@@ -82,7 +81,6 @@ exports.createComment = async (req, res) => {
       data: new CommentDto(comment),
     });
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ message: "Something Went Wrong." });
   }
 };
