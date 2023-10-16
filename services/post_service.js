@@ -43,7 +43,7 @@ class PostService {
       ...post._doc,
       isBookmarked: isBookmarked ? true : false,
       upVoteStatus: (await this.upvoteStatus(post, userId)) ? true : false,
-      dowbVoteStatus: (await this.downvoteStatus(post, userId)) ? true : false,
+      downVoteStatus: (await this.downvoteStatus(post, userId)) ? true : false,
     };
   }
 
