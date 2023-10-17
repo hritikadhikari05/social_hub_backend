@@ -879,3 +879,50 @@ exports.getPostsByFollowing = async (req, res) => {
     });
   }
 };
+
+/* Search Post */
+exports.searchPost = async (req, res) => {
+  const { query } = req.query;
+  const limit = parseInt(req.query.limit) || 10; // Limit the post
+  const page = parseInt(req.query.page) || 1; //Limit the page
+  const skip = (page - 1) * limit; // Skip the post
+
+  try {
+    const totalItems = await Post.countDocuments({
+      $text: { $search: query },
+    });
+
+    const post = await Post.find({ $text: { $search: query } })
+      .limit(limit)
+      .skip(skip)
+      .populate({
+        path: "author",
+        select: "userName firstName lastName bio profilePic",
+      })
+      .populate({
+        path: "community",
+        select: "name displayName description icon_image",
+      });
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Posts not found",
+      });
+    }
+
+    const postWithBookmark = await PostService.addBookmarkFieldToThepost(
+      post,
+      req.user.userId
+    );
+
+    return res.status(200).json({
+      message: "Posts found",
+      data: postWithBookmark,
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};

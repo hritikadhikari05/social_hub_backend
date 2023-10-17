@@ -81,4 +81,7 @@ router.delete("/delete-post/:postId", authCheck, post_controller.deletePost);
 /* Update Post By Id */
 router.put("/update-post/:postId", authCheck, post_controller.updatePost);
 
+/* Search Post */
+router.get("/search-post", authCheck, post_controller.searchPost);
+
 module.exports = router;
