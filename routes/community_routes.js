@@ -135,4 +135,11 @@ router.post(
   communityController.transferOwnership
 );
 
+/* Demote moderator */
+router.post(
+  "/demote-moderator/:communityId",
+  authCheck,
+  communityController.demoteModerator
+);
+
 module.exports = router;

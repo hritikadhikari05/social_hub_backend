@@ -825,3 +825,52 @@ exports.transferOwnership = async (req, res) => {
     });
   }
 };
+
+/* Demote the moderator of the community */
+exports.demoteModerator = async (req, res) => {
+  const { communityId } = req.params;
+  const { userId } = req.user;
+  const { moderatorId } = req.body;
+
+  try {
+    //Check if the community exists
+    const community = await Community.findById(communityId);
+    if (!community) {
+      return res.status(400).json({
+        message: "No community found.",
+      });
+    }
+
+    /* Check if the user is the creator of this community */
+    const admin = await AdminModel.findOne({
+      $and: [{ community: communityId }, { user: userId }],
+    });
+
+    if (!admin) {
+      return res.status(403).json({
+        message: "You are not the creator of this community.",
+      });
+    }
+
+    /* Check if the moderator exists */
+    const moderator = await Moderator.findOne({
+      $and: [{ community: communityId }, { user: moderatorId }],
+    });
+    if (!moderator) {
+      return res.status(400).json({
+        message: "No moderator found.",
+      });
+    }
+    /* Demote the moderator */
+    await moderator.deleteOne();
+
+    /* Return the response */
+    return res.status(200).json({
+      message: "Moderator successfully demoted.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
