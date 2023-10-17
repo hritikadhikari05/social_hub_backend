@@ -11,11 +11,14 @@ const fileupload_routes = require("./routes/fileupload_routes.js").router;
 const bookmark_routes = require("./routes/bookmark_routes.js");
 const { fileTooLargeErrorHandle } = require("./utils/file_upload.js");
 const bodyParser = require("body-parser");
+const compression = require("compression");
 
 /* Middlewares */
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(compression());
+
 // console.log(firebaseConfig);
 
 if (process.env.NODE_ENV === "development") {
