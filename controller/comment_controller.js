@@ -28,7 +28,7 @@ exports.createComment = async (req, res) => {
       await comment.save();
       parent_id = comment_id;
     } else {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Invalid Parent Type",
       });
     }
@@ -76,9 +76,9 @@ exports.createComment = async (req, res) => {
     post.comment_count++;
     post.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Comment Created Successfully",
-      data: new CommentDto(comment),
+      data: new CommentDto(comment, userId),
     });
   } catch (error) {
     res.status(500).json({ message: "Something Went Wrong." });
@@ -87,6 +87,7 @@ exports.createComment = async (req, res) => {
 
 /* Get All Comments */
 exports.getComments = async (req, res) => {
+  const { userId } = req.user;
   try {
     const { post_id } = req.params;
     const limit = parseInt(req.query.limit) || 10; // Limit the post
@@ -115,14 +116,18 @@ exports.getComments = async (req, res) => {
         message: "No Comments Found",
       });
     }
+
+    // const isUpvoted = ;
+
     res.status(200).json({
       message: "Comments Fetched Successfully",
-      data: comments.map((comment) => new CommentDto(comment)),
+      data: comments.map((comment) => new CommentDto(comment, userId)),
       totalPages: Math.ceil(totalComments / limit),
       // data: comments,
     });
   } catch (error) {
-    res.status(500).json("Something Went Wrong.");
+    console.log(error.message);
+    res.status(500).json({ message: "Something Went Wrong." });
   }
 };
 
@@ -130,11 +135,12 @@ exports.getComments = async (req, res) => {
 exports.getCommentReplies = async (req, res) => {
   try {
     const { comment_id } = req.params;
+    const { userId } = req.user;
 
     //Get all the replies for a particular comment
     const replies = await Comment.find({
       parent_id: comment_id,
-    });
+    }).populate("author_id");
     if (!replies) {
       res.status(400).json({
         message: "No Replies Found",
@@ -142,7 +148,7 @@ exports.getCommentReplies = async (req, res) => {
     }
     res.status(200).json({
       message: "Replies Fetched Successfully",
-      data: replies,
+      data: replies.map((reply) => new CommentDto(reply, userId)),
     });
   } catch (error) {
     res.status(500).json("Something Went Wrong.");
@@ -269,6 +275,7 @@ exports.deleteComment = async (req, res) => {
 /* Get comment by ID */
 exports.getCommentById = async (req, res) => {
   const { comment_id } = req.params;
+  const { userId } = req.user;
 
   try {
     const comment = await Comment.findById(comment_id).populate("author_id");
@@ -279,7 +286,7 @@ exports.getCommentById = async (req, res) => {
     }
     res.status(200).json({
       message: "Comment Fetched Successfully",
-      data: new CommentDto(comment),
+      data: new CommentDto(comment, userId),
     });
   } catch (error) {
     res.status(500).json("Something Went Wrong.");

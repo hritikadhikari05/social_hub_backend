@@ -1,5 +1,5 @@
-const { get } = require("mongoose");
 const User = require("../models/user_model");
+const CommentService = require("../services/comment_service");
 
 class CommentDto {
   _id;
@@ -15,8 +15,10 @@ class CommentDto {
   parent_type;
   parent_id;
   replies_count;
+  upvoteStatus;
+  downvoteStatus;
 
-  constructor(comment) {
+  constructor(comment, userId) {
     this._id = comment._id;
     this.content = comment.content;
     this.author = {
@@ -37,6 +39,8 @@ class CommentDto {
     this.parent_type = comment.parent_type;
     this.parent_id = comment.parent_id;
     this.replies_count = comment.replies_count;
+    this.upvoteStatus = CommentService.getUpvoteStatus(comment, userId);
+    this.downvoteStatus = CommentService.getDownvoteStatus(comment, userId);
   }
 }
 
