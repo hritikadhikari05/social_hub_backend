@@ -95,6 +95,12 @@ exports.getComments = async (req, res) => {
 
     const skip = (page - 1) * limit; // Skip the post
 
+    //Count the total number of comments
+    const totalComments = await Comment.countDocuments({
+      post_id,
+      parent_type: "POST",
+    });
+
     //Get all the comments for a particular post
     const comments = await Comment.find({
       post_id,
@@ -112,6 +118,7 @@ exports.getComments = async (req, res) => {
     res.status(200).json({
       message: "Comments Fetched Successfully",
       data: comments.map((comment) => new CommentDto(comment)),
+      totalPages: Math.ceil(totalComments / limit),
       // data: comments,
     });
   } catch (error) {
