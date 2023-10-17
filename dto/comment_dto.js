@@ -23,7 +23,7 @@ class CommentDto {
       _id: comment.author_id._id,
       firstName: comment.author_id.firstName,
       lastName: comment.author_id.lastName,
-      username: comment.author_id.username,
+      username: comment.author_id.userName,
       profilePic: comment.author_id.profilePic,
       bio: comment.author_id.bio,
     };
