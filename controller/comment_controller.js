@@ -265,3 +265,23 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json("Something Went Wrong.");
   }
 };
+
+/* Get comment by ID */
+exports.getCommentById = async (req, res) => {
+  const { comment_id } = req.params;
+
+  try {
+    const comment = await Comment.findById(comment_id).populate("author_id");
+    if (!comment) {
+      res.status(400).json({
+        message: "No Comment Found",
+      });
+    }
+    res.status(200).json({
+      message: "Comment Fetched Successfully",
+      data: new CommentDto(comment),
+    });
+  } catch (error) {
+    res.status(500).json("Something Went Wrong.");
+  }
+};
