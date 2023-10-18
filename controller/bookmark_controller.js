@@ -1,5 +1,6 @@
 const BookmarksDto = require("../dto/bookmarks_dto");
 const Bookmark = require("../models/bookmarks_model");
+const community_model = require("../models/community_model");
 const PostService = require("../services/post_service");
 
 /* Change user field to user_id in Bookmark model */
@@ -131,7 +132,9 @@ exports.getBookmarks = async (req, res) => {
     /* Get in bookmarks in specific format */
     const bookmarksDto = await Promise.all(
       bookmarks.map(async (post) => {
-        return new BookmarksDto(post, userId);
+        // console.log("Post", post.post.community);
+        const community = await community_model.findById(post.post.community);
+        return new BookmarksDto(post, userId, community);
       })
     );
 
@@ -140,6 +143,7 @@ exports.getBookmarks = async (req, res) => {
       data: bookmarksDto,
     });
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({
       message: "Something went wrong",
     });

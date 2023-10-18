@@ -49,4 +49,15 @@ router.get(
   commentController.getCommentById
 );
 
+//New Comment system
+
+/* Create new comment */
+router.post(
+  "/new-comment/:post_id",
+  authCheck,
+  commentController.createNewComment
+);
+
+router.get("/get-new-comments", authCheck, commentController.getNewComments);
+
 module.exports = router;

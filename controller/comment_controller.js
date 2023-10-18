@@ -4,6 +4,8 @@ const PersonalWall = require("../models/personalWall_model");
 const Comment = require("../models/comment_model");
 const Post = require("../models/post_model");
 const CommentDto = require("../dto/comment_dto");
+const NewComment = require("../models/new_comment_model");
+const ReplyComment = require("../models/replies_model");
 /* Create Comment */
 exports.createComment = async (req, res) => {
   try {
@@ -291,4 +293,128 @@ exports.getCommentById = async (req, res) => {
   } catch (error) {
     res.status(500).json("Something Went Wrong.");
   }
+};
+
+///New comment testing
+exports.createNewComment = async (req, res) => {
+  const { userId } = req.user;
+  const { post_id } = req.params;
+  const { content } = req.body;
+  let comment_context = "";
+
+  try {
+    const post = await Post.findById(post_id);
+    if (!post) {
+      return res.status.json({
+        message: "No post found",
+      });
+    }
+    //Check For comment Context in Admin Schema and Moderator Schema
+    const admin = await Admin.findOne({
+      admin_id: userId,
+    });
+    const moderator = await Moderator.findOne({
+      user_id: userId,
+    });
+    const personalWall = await PersonalWall.findOne({
+      user_id: userId,
+    });
+
+    //Set the value of comment_context by checking if the user is admin
+    //moderator or normal user
+    if (personalWall.user_id != null) {
+      comment_context = "ADMIN";
+    } else if (admin.admin_id != null) {
+      comment_context = "ADMIN";
+    } else if (moderator.user_id != null) {
+      comment_context = "MODERATOR";
+    } else {
+      comment_context = "USER";
+    }
+
+    const comment = await NewComment.create({
+      content,
+      author_id: userId,
+      post_id,
+      comment_context,
+      // replies: [],
+    });
+    res.status(200).json({
+      message: "Comment Created Successfully",
+      data: comment,
+    });
+  } catch (error) {
+    res.status(500).json("Something Went Wrong.");
+  }
+};
+
+//Get Comments
+exports.getNewComments = async (req, res) => {
+  try {
+    const comments = await NewComment.find();
+    if (comments.length == 0) {
+      return res.status(404).json({
+        message: "No comments found",
+      });
+    }
+    return res.status(200).json({
+      message: "Comments Fetched Successfully",
+      data: comments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+//Reply Comment
+exports.createReply = async (req, res) => {
+  const { post_id } = req.params;
+  const { userId } = req.user;
+  const { content } = req.body;
+  let comment_context = "";
+
+  try {
+    const post = await Post.findById(post_id);
+    if (!post) {
+      return res.status.json({
+        message: "No post found",
+      });
+    }
+    //Check For comment Context in Admin Schema and Moderator Schema
+    const admin = await Admin.findOne({
+      admin_id: userId,
+    });
+    const moderator = await Moderator.findOne({
+      user_id: userId,
+    });
+    const personalWall = await PersonalWall.findOne({
+      user_id: userId,
+    });
+
+    //Set the value of comment_context by checking if the user is admin
+    //moderator or normal user
+    if (personalWall.user_id != null) {
+      comment_context = "ADMIN";
+    } else if (admin.admin_id != null) {
+      comment_context = "ADMIN";
+    } else if (moderator.user_id != null) {
+      comment_context = "MODERATOR";
+    } else {
+      comment_context = "USER";
+    }
+
+    const comment = await ReplyComment.create({
+      content,
+      author_id: userId,
+      post_id,
+      comment_context,
+      // replies: [],
+    });
+    res.status(200).json({
+      message: "Comment Created Successfully",
+      data: comment,
+    });
+  } catch (error) {}
 };

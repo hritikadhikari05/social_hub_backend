@@ -1,5 +1,5 @@
 const Bookmark = require("../models/bookmarks_model");
-
+const Community = require("../models/community_model");
 class BookmarksDto {
   _id;
   title;
@@ -23,13 +23,20 @@ class BookmarksDto {
   downVoteStatus;
   isBookmarked;
 
-  constructor(post, user_id) {
+  constructor(post, user_id, community) {
     this._id = post.post._id;
     this.title = post.post.title;
-
     this.content = post.post.content;
     this.author = post.post.author;
-    this.community_id = post.post.community_id;
+    this.community = community
+      ? {
+          _id: community._id,
+          name: community.name,
+          displayName: community.displayName,
+          description: community.description,
+          icon_image: community.icon_image,
+        }
+      : null;
     this.is_sticked = post.post.is_sticked;
     this.upvotes = post.post.upvotes;
     this.downvotes = post.post.downvotes;
