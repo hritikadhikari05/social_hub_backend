@@ -39,8 +39,8 @@ class CommentDto {
     this.parent_type = comment.parent_type;
     this.parent_id = comment.parent_id;
     this.replies_count = comment.replies_count;
-    this.upvoteStatus = CommentService.getUpvoteStatus(comment, userId);
-    this.downvoteStatus = CommentService.getDownvoteStatus(comment, userId);
+    this.upVoteStatus = CommentService.getUpvoteStatus(comment, userId);
+    this.downVoteStatus = CommentService.getDownvoteStatus(comment, userId);
   }
 }
 
