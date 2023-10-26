@@ -128,22 +128,12 @@ exports.login = async (req, res) => {
       });
     }
 
-    //Generate otp
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      upperCase: false,
-      specialChars: false,
-    });
-
-    user.otp = otp;
-    user.save();
-
     return res.status(200).json({
       message: "User logged in successfully",
       token: createToken(user),
-      otp: otp,
     });
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json({
       message: "Internal server error",
     });
