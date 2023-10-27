@@ -9,7 +9,7 @@ const sendOtp = async (phoneNo, message) => {
     const response = await client.messages.create({
       body: `Your OTP for social-hub is: ${message}`,
       from: "+19165121841",
-      to: `${phoneNo}`,
+      to: `+91${phoneNo}`,
     });
     return response;
   } catch (error) {
