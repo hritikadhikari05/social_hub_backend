@@ -62,7 +62,6 @@ exports.register = async (req, res) => {
 
     // // console.log(otp);
     const otpResponse = await sendOtp(phoneNo, otp);
-    console.log(otpResponse);
 
     /* Create new user */
     const newUser = new User({
@@ -70,7 +69,7 @@ exports.register = async (req, res) => {
       lastName,
       userName,
       email,
-      phoneNo,
+      phoneNo: `+91${phoneNo}`,
       password: hashedPassword,
       gender,
       bio,
@@ -93,6 +92,8 @@ exports.register = async (req, res) => {
       token: token,
     });
   } catch (error) {
+    console.log(error.message);
+
     return res.status(400).json({
       message: "Something went wrong",
     });
