@@ -252,7 +252,7 @@ exports.leaveCommunity = async (req, res) => {
       message: "Community sucessfully left.",
     });
   } catch (err) {
-    console.log(err.message);
+    // console.log(err.message);
     res.status(500).json({
       message: "Internal Server Error",
     });
@@ -729,7 +729,7 @@ exports.getJoinedMembers = async (req, res) => {
       totalPages: Math.ceil(totalItems / limit),
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     res.status(500).json({
       message: "Internal Server Error",
     });

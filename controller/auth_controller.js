@@ -61,11 +61,8 @@ exports.register = async (req, res) => {
     });
 
     // // console.log(otp);
-    // const otpResponse = await sendOtp(
-    //   phoneNo,
-    //   otp
-    // );
-    // console.log(otpResponse);
+    const otpResponse = await sendOtp(phoneNo, otp);
+    console.log(otpResponse);
 
     /* Create new user */
     const newUser = new User({
@@ -94,7 +91,6 @@ exports.register = async (req, res) => {
     return res.status(201).json({
       message: "User created successfully",
       token: token,
-      otp: otp,
     });
   } catch (error) {
     return res.status(400).json({

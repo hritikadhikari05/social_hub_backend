@@ -128,7 +128,7 @@ exports.getComments = async (req, res) => {
       // data: comments,
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     res.status(500).json({ message: "Something Went Wrong." });
   }
 };

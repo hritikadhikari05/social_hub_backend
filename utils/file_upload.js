@@ -70,10 +70,10 @@ const deleteFileFromSpace = async (bucketName, key) => {
     Bucket: bucketName,
     Key: key,
   };
-  console.log("Key: ", key);
+  // console.log("Key: ", key);
   try {
     await s3.deleteObject(params).promise();
-    console.log(`Deletion success: '${key}' was deleted from '${bucketName}'.`);
+    // console.log(`Deletion success: '${key}' was deleted from '${bucketName}'.`);
   } catch (error) {
     console.error("Deletion error:", error);
     throw error;
