@@ -142,4 +142,7 @@ router.post(
   communityController.demoteModerator
 );
 
+/* Search community */
+router.get("/search-community", authCheck, communityController.searchCommunity);
+
 module.exports = router;

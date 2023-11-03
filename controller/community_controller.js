@@ -874,3 +874,36 @@ exports.demoteModerator = async (req, res) => {
     });
   }
 };
+
+//Community Search
+exports.searchCommunity = async (req, res) => {
+  const { userId } = req.user;
+  const { query } = req.query;
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+
+  try {
+    const totalItems = await Community.countDocuments({
+      $text: { $search: query },
+    });
+
+    const communities = await Community.find({
+      $text: { $search: query },
+    })
+      .skip(skip)
+      .limit(limit);
+
+    //Add isMember field to the community
+    res.status(200).json({
+      message: "Communities Found",
+      data: await CommunityService.addAndCheckIsMemberField(
+        communities,
+        userId
+      ),
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

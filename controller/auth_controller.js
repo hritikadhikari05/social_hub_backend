@@ -92,8 +92,6 @@ exports.register = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log(error.message);
-
     return res.status(400).json({
       message: "Something went wrong",
     });

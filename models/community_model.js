@@ -50,4 +50,9 @@ const communitySchema = new Schema(
   { timestamps: true }
 );
 
+communitySchema.index({
+  name: "text",
+  displayName: "text",
+});
+
 module.exports = mongoose.model("Community", communitySchema);
